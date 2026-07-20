@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  /* font-family: "Cormorant Garamond", serif;
+  font-family: "Afacad Flux", serif;
+  font-weight: 400;
+  font-style: normal; */
+  
+  /* font-family: "Lato", serif;
+  font-weight: 400;
+  font-style: normal; */
+  
+ font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination-container .page-item {
+  display: flex;
+  inline-size: 45px;
+  block-size: 45px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 4px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  color: #333;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-container .page-item:hover {
+  background-color: #d1d1d1;
+}
+
+.pagination-container .page-item.active {
+  background-color: #3FB249;
+  color: white;
+}
+
+
+.custom-class{
+  background-color: b;
+}
+
+.header-font{
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
