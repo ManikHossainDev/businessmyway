@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -22,7 +22,7 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "sharp": "^0.33.5"
-  },
+  }, 
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.17.6",

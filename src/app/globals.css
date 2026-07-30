@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,16 +7,7 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  /* font-family: "Cormorant Garamond", serif;
-  font-family: "Afacad Flux", serif;
-  font-weight: 400;
-  font-style: normal; */
-  
-  /* font-family: "Lato", serif;
-  font-weight: 400;
-  font-style: normal; */
-  
- font-family: "DM Sans", sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 400;
   font-style: normal;
 }

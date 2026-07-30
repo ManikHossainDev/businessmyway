@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Event Websites',
-  description: 'Discover and book the best event venues, services, and organizers for weddings, conferences, parties, and more.'
+  title: 'Business May Way',
+  description: 'Shop a wide selection of cigarette brands online. Fast delivery, competitive prices, and secure age-verified checkout for adult smokers 18+.'
 }
 
 

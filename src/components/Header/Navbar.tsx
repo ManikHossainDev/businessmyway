@@ -10,31 +10,40 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 
-import { AiOutlineMenu } from "react-icons/ai";
+import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiPhone } from "react-icons/fi";
+import { TfiHeadphoneAlt } from "react-icons/tfi";
 
 const navLink = [
   {
     href: "/",
-    label: "Discover",
+    label: "Cigarettes",
   },
   {
-    href: "/Venues",
-    label: "Venues",
+    href: "/Cigars",
+    label: "Cigars",
   },
   {
-    href: "/Services",
-    label: "Services",
+    href: "/Tobacco",
+    label: "Tobacco",
   },
   {
-    href: "/My Events",
-    label: "My Events",
+    href: "/Accessories",
+    label: "Accessories",
+  },
+  {
+    href: "/Brands",
+    label: "Brands",
+  },
+  {
+    href: "/New-Arrivals",
+    label: "New Arrivals",
   },
 ];
 
 const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  
+
   const user = {
     name: "John Doe",
     avatar: "", // Replace with actual avatar URL
@@ -50,32 +59,39 @@ const Navbar = () => {
     // Dispatch logout action to clear Redux state and cookies
     dispatch(logout());
     // Redirect to login page
-    router.push('/login');
+    router.push("/login");
   };
 
   const menuItems = [
     {
       key: "3",
-      label: <div className="cursor-pointer px-4 py-1" onClick={handleLogout}>Logout</div>,
+      label: (
+        <div className="cursor-pointer px-4 py-1" onClick={handleLogout}>
+          Logout
+        </div>
+      ),
     },
   ];
 
   return (
-    <nav>
-      <div className="lg:container flex justify-between items-center  py-2 px-3 ">
-        {/* logo */}
-        <Link href="/">
+    <nav className="border-b border-[#E5E5E5] shadow-[0px_4px_16px_0px_#00000026]">
+      <div className="xl:container mx-auto flex justify-between items-center py-3 px-4">
+        {/* Logo + Brand name */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
             src={logo}
-            width={100}
-            height={100}
+            width={50}
+            height={50}
             alt="logo"
-            className="rounded-md lg:mr-20 w-[80px] h-[80px]"
+            className="w-10 h-8"
           />
+          <span className="text-[12px] md:text-[20px] lg:text-[22px] tracking-wide font-medium text-[#BF8D2F]">
+            SMKR
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <ul className="hidden md:flex gap-1">
+        <ul className="hidden md:flex items-center gap-2  xl:gap-6">
           {navLink.map((link) => (
             <li key={link.href}>
               <ActiveLink href={link.href} label={link.label} />
@@ -83,48 +99,50 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Create job button */}
-        {user ? (
-          <div className="flex justify-between items-center mg:gap-4 lg:gap-8 gap-2">
-            {/* Create Job Button */}
-            <Link
-              href="#"
-              className="rounded-[4px] md:px-6 px-2 md:py-5 py-2  text-white border-none"
-            >
-              Switch to Hosting
-            </Link>
-
-            {/* User Avatar Dropdown */}
-            <Dropdown menu={{ items: menuItems }} placement="top" arrow>
-              {user?.avatar && (
-                <div className="flex items-center gap-2 bg-white p-2 px-3 rounded-full cursor-pointer">
-                  <AiOutlineMenu className="w-6 h-6" /> {/* 6 × 4 = 24px */}
-                  <Image
-                    width={24}
-                    height={24}
-                    src={user.avatar}
-                    alt="User Image"
-                    className="rounded-full ring ring-[#d75b3fad]  w-8 h-8"
-                  />
-                </div>
-              )}
-            </Dropdown>
+        {/* Right section */}
+        <div className="flex items-center gap-2  xl:gap-6">
+          {/* Order phone number */}
+          <div className="hidden lg:flex items-center gap-2 text-sm text-gray-700">    
+            <div className="flex flex-col leading-tight">
+              <TfiHeadphoneAlt className="w-5 h-5  mx-auto" />
+              <span className=" text-gray-500 md:text-[10px] lg:text-sm text-center">Order on</span>
+              <span className="font-semibold text-center md:text-[10px] lg:text-xs">0113 217 7723</span>
+            </div>
           </div>
-        ) : (
-          <div>
-            <Link href="/login" className="w-full">
-              <Button>Login</Button>
-            </Link>
-          </div>
-        )}
 
-        {/* Mobile Drawer Button */}
-        <Button
-          type="text"
-          className="md:hidden"
-          icon={<MenuOutlined />}
-          onClick={showDrawer}
-        />
+          {/* Icon actions */}
+          <div className="flex items-center gap-4">
+            <button aria-label="Search">
+              <FiSearch className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+            </button>
+            <button aria-label="Wishlist">
+              <FiHeart className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+            </button>
+            <button aria-label="Bag">
+              <FiShoppingBag className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+            </button>
+
+            {user ? (
+              <Dropdown menu={{ items: menuItems }} placement="top" arrow>
+                <button aria-label="Account" className="cursor-pointer">
+                  <FiUser className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+                </button>
+              </Dropdown>
+            ) : (
+              <Link href="/login">
+                <FiUser className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Drawer Button */}
+          <Button
+            type="text"
+            className="md:hidden"
+            icon={<MenuOutlined />}
+            onClick={showDrawer}
+          />
+        </div>
 
         {/* Drawer for Mobile Navigation */}
         <Drawer
@@ -140,19 +158,23 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+
+          <div className="flex items-center gap-2 text-sm text-gray-700 mt-4">
+            <FiPhone className="w-5 h-5" />
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm text-gray-500 font-semibold">Order on</span>
+              <span className="text-xs">0113 217 7723</span>
+            </div>
+          </div>
+
           <div className="flex flex-col gap-4 mt-4">
             {user.name ? (
               <>
-                {/* <Link href="/profile">
-                  <button className="px-8 py-3 border border-red-500 text-red-500 rounded">
-                    Profile
-                  </button>
-                </Link> */}
-                <button 
+                <button
                   className="text-white bg-red-500 px-10 py-3 rounded"
                   onClick={() => {
                     dispatch(logout());
-                    router.push('/login');
+                    router.push("/login");
                   }}
                 >
                   Logout

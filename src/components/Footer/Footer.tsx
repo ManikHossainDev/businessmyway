@@ -1,99 +1,125 @@
-import Image from "next/image";
-import logo from "@/assets/logo/logo.png";
 import Link from "next/link";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
+
+import logo from "@/assets/logo/logo.png";
+import Image from "next/image";
+const shopLinks = [
+  { label: "Cigarettes", href: "/shop/cigarettes" },
+  { label: "Cigars", href: "/shop/cigars" },
+  { label: "Pipe Tobacco", href: "/shop/pipe-tobacco" },
+  { label: "Rolling Tobacco", href: "/shop/rolling-tobacco" },
+  { label: "Accessories", href: "/shop/accessories" },
+  { label: "New Arrivals", href: "/shop/new-arrivals" },
+];
+
+const brandLinks = [
+  { label: "Davidoff", href: "/brands/davidoff" },
+  { label: "Cohiba", href: "/brands/cohiba" },
+  { label: "Montecristo", href: "/brands/montecristo" },
+  { label: "Dunhill", href: "/brands/dunhill" },
+  { label: "Partagás", href: "/brands/partagas" },
+  { label: "All Brands", href: "/brands" },
+];
+
+const infoLinks = [
+  { label: "About Us", href: "/about-us" },
+  { label: "Contact", href: "/contact-us" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Term-Condition", href: "/terms-condition" },
+  { label: "Refund Policy", href: "/refund-policy" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Cookie Policy", href: "/cookie-policy" },
+];
+
+const socialLinks = [
+  { icon: FaInstagram, href: "https://instagram.com" },
+  { icon: FaFacebookF, href: "https://facebook.com" },
+  { icon: FaXTwitter, href: "https://x.com" },
+];
+
+const FooterColumn = ({
+  title,
+  links,
+}: {
+  title: string;
+  links: { label: string; href: string }[];
+}) => (
+  <div>
+    <h3 className="font-semibold text-[12px] md:text-[18px] lg:text-[22px] text-gray-900 mb-4">
+      {title}
+    </h3>
+    <ul className="space-y-3">
+      {links.map((link) => (
+        <li key={link.label}>
+          <Link
+            href={link.href}
+            className="text-[10px] md:text-[16px] lg:text-[18px] text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#427571] text-white">
-      <div className="w-full md:px-6 px-2 py-3 border-t border-b border-gray-200">
-        <div className="md:container mx-auto grid md:grid-cols-12 gap-8 text-center md:text-left pt-7">
-          
-          {/* About Section */}
-          <div className="md:col-span-4 col-span-12">
-              <Link href="/">
+    <footer className="px-2 xl:px-0 xl:container mx-auto  bg-white text-gray-900">
+      <div className="pt-14 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+          {/* Brand / About */}
+          <div className="md:col-span-4">
+            <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
                 src={logo}
-                width={100}
-                height={100}
+                width={50}
+                height={50}
                 alt="logo"
-                className="rounded-md lg:mr-20 w-[189px] h-[78px]"
+                className="w-10 h-8"
               />
+              <span className="text-[12px] md:text-[18px] lg:text-[22px] font-semibold tracking-wide text-[#BF8D2F]">
+                SMKR
+              </span>
             </Link>
+            <p className="text-[10px] md:text-[16px] lg:text-[18px] text-gray-500 leading-relaxed mb-5 max-w-xs">
+              Be the first to discover our latest arrivals, exclusive releases, and members-only offers. Thoughtfully curated updates, delivered to your inbox—never more than twice a month. No spam, ever.
+            </p>
+            <div className="flex items-center  gap-3">
+              {socialLinks.map(({ icon: Icon, href }, idx) => (
+                <Link
+                  key={idx}
+                  href={href}
+                  target="_blank"
+                  className="w-9 h-9 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <Icon className="text-[10px] md:text-[16px] lg:text-[18px]" />
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* Explore Section */}
-          <div className="md:col-span-8 col-span-12 grid grid-cols-12 gap-5">
-            <div className="col-span-4 text-center">
-              <h3 className="font-semibold text-xl mb-4">Explore</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="/" className="hover:text-gray-300">Home</Link>
-                </li>
-                <li>
-                  <Link href="/services" className="hover:text-gray-300">Services</Link>
-                </li>
-                <li>
-                  <Link href="/about-us" className="hover:text-gray-300">About</Link>
-                </li>
-                <li>
-                  <Link href="/contact-us" className="hover:text-gray-300">Contact</Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Support Section */}
-            <div className="col-span-4 text-center">
-              <h3 className="font-semibold text-xl mb-4">Support</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="/faqs" className="hover:text-gray-300">FAQs</Link>
-                </li>
-                <li>
-                  <Link href="/terms-condition" className="hover:text-gray-300">Terms & Conditions</Link>
-                </li>
-                <li>
-                  <Link href="/privacy-policy" className="hover:text-gray-300">Privacy Policy</Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Section */}
-            <div className="col-span-4 text-center">
-              <h3 className="font-semibold text-xl mb-4">Contact</h3>
-              <ul className="space-y-3">
-                <li className=" flex justify-center items-center">
-                  <FaPhone className="text-gray-300 size-4 mr-1" />
-                  <Link href="tel:+923041234567" className="hover:text-gray-300">+923041234</Link>
-                </li>
-                <li className=" flex justify-center items-center">
-                  <FaEnvelope className="text-gray-300 size-4 mr-1"  />
-                  <Link href="mailto:demo.info.com" className="hover:text-gray-300">demo.inf.com</Link>
-                </li>
-                <li className=" flex justify-center items-center">
-                  <FaMapMarkerAlt className="text-gray-300 size-4 mr-1" />
-                  <Link href="https://goo.gl/maps/demo" target="_blank" className="hover:text-gray-300">Dhaka, Bangladesh</Link>
-                </li>
-              </ul>
-            </div>
+          {/* Link Columns */}
+          <div className="md:col-span-8 flex justify-between">
+            <FooterColumn title="Shop" links={shopLinks} />
+            <FooterColumn title="Brands" links={brandLinks} />
+            <FooterColumn title="Information" links={infoLinks} />
           </div>
         </div>
       </div>
 
-      {/* Bottom Logo and Links */}
-      <div className="w-full md:container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center mt-3 pb-7">
-        <p className="text-lg">© 2024. All Rights Reserved</p>
-        <ul className="flex md:mr-6 lg:mr-28 gap-4">
-          <li className="text-lg font-semibold bg-white p-2 rounded-full">
-            <FaFacebookF  className="text-[#427571]"/>
-          </li>
-          <li className="text-lg font-semibold bg-white p-2 rounded-full">
-            <FaInstagram  className="text-[#427571]"/>
-          </li>
-          <li className="text-lg font-semibold bg-white p-2 rounded-full">
-            <FaLinkedinIn className="text-[#427571]" />
-          </li>
-        </ul>
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-200">
+        <div className=" py-5 flex flex-col lg:flex-row items-center justify-between gap-3">
+          <p className="text-[10px]  lg:text-[16px]  text-gray-500 text-center md:text-left">
+            © 2022 SMKR All rights reserved. Registered in England & Wales.
+          </p>
+          <p className="text-[10px] lg:text-[16px]  text-gray-500 text-center md:text-right flex items-center gap-1">
+            <span className="text-amber-500">⚠</span>
+            SMOKING KILLS Tobacco products are harmful to your health and
+            are addictive. For adults only. 18+ only.
+          </p>
+        </div>
       </div>
     </footer>
   );
