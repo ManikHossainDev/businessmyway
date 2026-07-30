@@ -65,8 +65,9 @@ const FooterColumn = ({
 
 const Footer = () => {
   return (
-    <footer className="px-2 xl:px-0 xl:container mx-auto  bg-white text-gray-900">
-      <div className="pt-14 pb-10">
+    <section className="shadow-[0px_-13px_10px_0px_#00000010]">
+      <footer className="px-2 xl:px-0 xl:container mx-auto  bg-white text-gray-900">
+      <div className="pt-5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand / About */}
           <div className="md:col-span-4">
@@ -122,6 +123,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    </section>
   );
 };
 

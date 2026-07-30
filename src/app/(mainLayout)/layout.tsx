@@ -5,7 +5,7 @@ import React from "react";
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <section>
-      <div className="pb-[79px]">
+      <div className="md:pb-[79px]">
         <Header />
       </div>
       {children}

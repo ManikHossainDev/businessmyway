@@ -75,7 +75,7 @@ const Navbar = () => {
 
   return (
     <nav className="border-b border-[#E5E5E5] shadow-[0px_4px_16px_0px_#00000026]">
-      <div className="xl:container mx-auto flex justify-between items-center py-3 px-4">
+      <div className="xl:container mx-auto flex justify-between items-center py-3 px-2 xl:px-0">
         {/* Logo + Brand name */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
@@ -113,24 +113,24 @@ const Navbar = () => {
           {/* Icon actions */}
           <div className="flex items-center gap-4">
             <button aria-label="Search">
-              <FiSearch className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+              <FiSearch className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </button>
             <button aria-label="Wishlist">
-              <FiHeart className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+              <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </button>
             <button aria-label="Bag">
-              <FiShoppingBag className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+              <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </button>
 
             {user ? (
               <Dropdown menu={{ items: menuItems }} placement="top" arrow>
                 <button aria-label="Account" className="cursor-pointer">
-                  <FiUser className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+                  <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
                 </button>
               </Dropdown>
             ) : (
               <Link href="/login">
-                <FiUser className="w-5 h-5 xl:w-8 xl:h-8 text-gray-700" />
+                <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
               </Link>
             )}
           </div>
