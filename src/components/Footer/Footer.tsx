@@ -28,7 +28,7 @@ const infoLinks = [
   { label: "Term-Condition", href: "/terms-condition" },
   { label: "Refund Policy", href: "/refund-policy" },
   { label: "Shipping Policy", href: "/shipping-policy" },
-  { label: "Cookie Policy", href: "/cookie-policy" },
+  // { label: "Cookie Policy", href: "/cookie-policy" },
 ];
 
 const socialLinks = [
@@ -67,7 +67,7 @@ const Footer = () => {
   return (
     <section className="shadow-[0px_-13px_10px_0px_#00000010]">
       <footer className="px-2 xl:px-0 xl:container mx-auto  bg-white text-gray-900">
-      <div className="pt-5">
+      <div className="py-5 ">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand / About */}
           <div className="md:col-span-4">

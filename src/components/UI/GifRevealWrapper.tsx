@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/GifRevealWrapper.tsx
 "use client";
 

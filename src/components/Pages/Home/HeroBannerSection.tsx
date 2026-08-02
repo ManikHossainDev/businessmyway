@@ -1,10 +1,10 @@
 import Image from "next/image";
 import herosection from "@/assets/home/herosection.png";
-import Rectangle from "@/assets/home/Rectangle.gif";
+// import Rectangle from "@/assets/home/Rectangle.gif";
 import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
 const HeroBannerSection = () => {
   return (
-    <section className="relative md:py-10 h-[62vh] sm:h-[50vh] md:h-[60vh] lg:h-[92vh] overflow-hidden">
+    <section className=" relative md:py-10 h-[62vh] sm:h-[50vh] md:h-[60vh] lg:h-[92vh] overflow-hidden">
       <Image
         src={herosection}
         alt="Hero section background"
@@ -25,10 +25,10 @@ const HeroBannerSection = () => {
             </span>
           </div>
 
-          <h1 className="font-[OPTICorvinus_Skyline] text-18 leading-[20px]  sm:text-[20px] sm:leading-[24px] md:text-[52px] md:leading-[65px] lg:text-[80px] lg:leading-[104px]  xl:text-[105px] xl:leading-[124px] tracking-tight text-black">
+          <h1 className="md:font-corvinus text-18 leading-[20px]  sm:text-[20px] sm:leading-[24px] md:text-[52px] md:leading-[65px] lg:text-[80px] lg:leading-[104px]  xl:text-[105px] xl:leading-[124px] tracking-tight text-black">
           Crafted for Those <br />
-          <div className="flex font-[OPTICorvinus_Skyline]">
-            Who <div className="text-[#BF8D2F] font-[OPTICorvinus_Skyline] ml-1 md:ml-2 lg:ml-3 xl:ml-4"> Demand</div>
+          <div className="flex md:font-corvinus">
+            Who <div className="text-[#BF8D2F] md:font-corvinus ml-1 md:ml-2 lg:ml-3 xl:ml-4"> Demand</div>
             </div> Distinction
         </h1>
 
@@ -47,7 +47,7 @@ const HeroBannerSection = () => {
           </button>
           </GifRevealWrapper>
           <GifRevealWrapper borderSize={3}>
-          <button className="px-2 w-[200px] rounded-sm md:w-[180px] lg:w-[200px] xl:w-[316px] h-[40px] md:h-[56px] border border-black bg-white hover:bg-[#eeececa4] text-black font-medium lg:px-[10px]  lg:py-[10px]   transition-colors">
+          <button className="px-2 w-[200px] rounded-sm md:w-[180px] lg:w-[200px] xl:w-[316px] h-[40px] md:h-[56px] border border-black bg-white hover:bg-[#eeecec] text-black font-medium lg:px-[10px]  lg:py-[10px]   transition-colors">
             Our Story
           </button>
           </GifRevealWrapper>

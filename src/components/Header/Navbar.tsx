@@ -12,31 +12,41 @@ import { logout } from "@/redux/features/auth/authSlice";
 
 import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiPhone } from "react-icons/fi";
 import { TfiHeadphoneAlt } from "react-icons/tfi";
+import CartDrawer from "../UI/CartDrawer";
+
+
 
 const navLink = [
+  { href: "/cigarettes", label: "Cigarettes" },
+  { href: "/cigars", label: "Cigars" },
+  { href: "/tobacco", label: "Tobacco" },
+  { href: "/accessories", label: "Accessories" },
+  { href: "/brands", label: "Brands" },
+  { href: "/newarrivals", label: "New Arrivals" },
+];
+
+// Replace with your real cart data / API call
+const initialCartItems= [
   {
-    href: "/",
-    label: "Cigarettes",
+    id: 1,
+    image: "/images/zino-cigar.png",
+    title: "Zino Honduras Robusto Cigars - Bof of 25",
+    price: 456.0,
+    qty: 1,
   },
   {
-    href: "/Cigars",
-    label: "Cigars",
+    id: 2,
+    image: "/images/zino-cigar.png",
+    title: "Zino Honduras Robusto Cigars - Bof of 25",
+    price: 456.0,
+    qty: 1,
   },
   {
-    href: "/Tobacco",
-    label: "Tobacco",
-  },
-  {
-    href: "/Accessories",
-    label: "Accessories",
-  },
-  {
-    href: "/Brands",
-    label: "Brands",
-  },
-  {
-    href: "/New-Arrivals",
-    label: "New Arrivals",
+    id: 3,
+    image: "/images/zino-cigar.png",
+    title: "Zino Honduras Robusto Cigars - Bof of 25",
+    price: 456.0,
+    qty: 1,
   },
 ];
 
@@ -46,19 +56,30 @@ const Navbar = () => {
 
   const user = {
     name: "John Doe",
-    avatar: "", // Replace with actual avatar URL
+    avatar: "",
     email: "john.doe@example.com",
   };
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState(initialCartItems);
 
   const showDrawer = () => setIsDrawerOpen(true);
   const closeDrawer = () => setIsDrawerOpen(false);
 
+  const showCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
+
+  const updateQty = (id: number, delta: number) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
+      )
+    );
+  };
+
   const handleLogout = () => {
-    // Dispatch logout action to clear Redux state and cookies
     dispatch(logout());
-    // Redirect to login page
     router.push("/login");
   };
 
@@ -102,7 +123,7 @@ const Navbar = () => {
         {/* Right section */}
         <div className="flex items-center gap-2  xl:gap-6">
           {/* Order phone number */}
-          <div className="hidden lg:flex items-center gap-2 text-sm text-gray-700">    
+          <div className="hidden lg:flex items-center gap-2 text-sm text-gray-700">
             <div className="flex flex-col leading-tight">
               <TfiHeadphoneAlt className="w-5 h-5  mx-auto" />
               <span className=" text-gray-500 md:text-[10px] lg:text-sm text-center">Order on</span>
@@ -118,8 +139,13 @@ const Navbar = () => {
             <button aria-label="Wishlist">
               <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </button>
-            <button aria-label="Bag">
+            <button aria-label="Bag" onClick={showCart} className="relative">
               <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
             </button>
 
             {user ? (
@@ -150,6 +176,7 @@ const Navbar = () => {
           placement="right"
           onClose={closeDrawer}
           open={isDrawerOpen}
+          width={200}
         >
           <ul className="flex flex-col gap-4">
             {navLink.map((link) => (
@@ -169,17 +196,15 @@ const Navbar = () => {
 
           <div className="flex flex-col gap-4 mt-4">
             {user.name ? (
-              <>
-                <button
-                  className="text-white bg-red-500 px-10 py-3 rounded"
-                  onClick={() => {
-                    dispatch(logout());
-                    router.push("/login");
-                  }}
-                >
-                  Logout
-                </button>
-              </>
+              <button
+                className="text-white bg-red-500 px-10 py-3 rounded"
+                onClick={() => {
+                  dispatch(logout());
+                  router.push("/login");
+                }}
+              >
+                Logout
+              </button>
             ) : (
               <>
                 <Link href="/login">
@@ -196,6 +221,14 @@ const Navbar = () => {
             )}
           </div>
         </Drawer>
+
+        {/* Cart Drawer - now a separate component */}
+        <CartDrawer
+          open={isCartOpen}
+          onClose={closeCart}
+          cartItems={cartItems}
+          onUpdateQty={updateQty}
+        />
       </div>
     </nav>
   );

@@ -25,6 +25,9 @@ const config: Config = {
         primaryBg: "#EBF6FE",
         hoverText: "#dcbb87",
       },
+      fontFamily: {
+        corvinus: ["var(--font-corvinus-skyline)"],
+      },
     },
   },
   plugins: [],

@@ -37,21 +37,21 @@ const InputComponent: FC<InputComponentProps> = ({
         <AntInput.TextArea
           autoSize={{ minRows: 7, maxRows: 10 }}
           placeholder={placeholder || "Enter text"}
-          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-[#E8F0FE] placeholder:text-black border border-white ${className}`}
+          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-transparent placeholder:text-black border border-white ${className}`}
           {...(rest as TextAreaProps)}
         />
       ) : isPassword ? (
         <AntInput.Password
-          prefix={Icon && <Icon className="text-black text-xl  rounded-full" />}
+          prefix={Icon && <Icon className="text-black text-xl rounded-full" />}
           placeholder={placeholder || "Enter password"}
-          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-[#E8F0FE]  placeholder:text-black border border-white ${className} `}
+          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-transparent placeholder:text-black border border-white ${className}`}
           {...(rest as PasswordProps)}
         />
       ) : (
         <AntInput
-          prefix={Icon && <Icon className="text-black text-xl   rounded-full" />}
+          prefix={Icon && <Icon className="text-black text-xl rounded-full" />}
           placeholder={placeholder || "Enter value"}
-          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-[#E8F0FE] placeholder:text-black border  border-white ${className}`}
+          className={`w-full px-4 py-3 text-[16px] text-black rounded-lg bg-transparent placeholder:text-black border border-white ${className}`}
           type={type}
           {...(rest as InputProps)}
         />
@@ -61,4 +61,3 @@ const InputComponent: FC<InputComponentProps> = ({
 };
 
 export default InputComponent;
-

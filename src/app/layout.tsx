@@ -2,16 +2,13 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from '../lib/Providers';
+import AgeGate from "@/components/UI/AgeGate";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const corvinusSkyline = localFont({
+  src: "./fonts/OPTICorvinus-Skyline.otf",
+  variable: "--font-corvinus-skyline",
+  weight: "400", // .otf static font, তাই single weight
+  style: "normal",
 });
 
 export const metadata: Metadata = {
@@ -28,9 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${corvinusSkyline.variable} antialiased`}
+         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <AgeGate>
+          {children}
+          </AgeGate>
+          </Providers>
       </body>
     </html>
   );

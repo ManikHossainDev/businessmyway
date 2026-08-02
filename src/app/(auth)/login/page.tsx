@@ -1,7 +1,7 @@
 import Login from "@/components/Pages/Auth/Login/Login";
 import React from "react";
 export const metadata = {
-  title: "Login | Locksmit",
+  title: "Login | BusinessMayWay",
   description: "This is the login page for our application",
   keywords: ["login", "page", "example"],
 };

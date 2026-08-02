@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import InputComponent from "@/components/UI/InputComponent";
-import { Form,  message } from "antd";
+import Image from "next/image";
+import { Form, message } from "antd";
 import { useRouter } from "next/navigation";
+import InputComponent from "@/components/UI/InputComponent";
+import SVECTOR from "@/assets/Authentication/SVECTOR.png";
+import { FaLock } from "react-icons/fa";
 
 interface ResetPasswordFormValues {
   password: string;
@@ -9,7 +13,8 @@ interface ResetPasswordFormValues {
 }
 
 const ResetPassword: React.FC = () => {
-    const router = useRouter();
+  const router = useRouter();
+
   const onFinish = (values: ResetPasswordFormValues) => {
     console.log("Password reset successfully", values);
     message.success("Password reset successfully!");
@@ -17,80 +22,89 @@ const ResetPassword: React.FC = () => {
   };
 
   return (
-    <section className=" w-[90%] mx-auto h-[90vh]  px-4 py-10 md:px-6 lg:px-10 bg-[#282828] my-10 rounded-md">
-      <div className="w-full max-w-7xl mx-auto">
-          {/* Reset Password Form Content */}
-          <div className="w-full max-w-[450px] mx-auto px-4 md:px-0">
-            <div className="bg-[#5E5E5E] shadow-lg rounded-lg mt-32 border-[3px] border-white">
-              <div className="px-6 py-8 md:px-8 lg:px-10">
-                <h2 className="text-xl md:text-2xl font-semibold text-white  text-center ">
-                Reset Password
-                </h2>
-                <p className="text-center pb-3 text-white">Your password must be 8-10 character long.</p>
-                <Form
-                  layout="vertical"
-                  onFinish={onFinish}
-                  className="space-y-5"
-                >
-                  <Form.Item
-                  label={<span className="text-white">Password</span>}
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter a new password",
-                      },
-                      {
-                        min: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                    ]}
-                    hasFeedback
-                  >
-                    <InputComponent
-                      placeholder="New Password"
-                      className="w-full p-3 border-b border-gray-300 "
-                    />
-                  </Form.Item>
-                  <Form.Item
-                  label={<span className="text-white">Confirm Password</span>}
-                    name="confirmPassword"
-                    dependencies={["password"]}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please confirm your new password",
-                      },
-                      {
-                        min: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue("password") === value) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(
-                            new Error("Passwords do not match")
-                          );
-                        },
-                      }),
-                    ]}
-                    hasFeedback
-                  >
-                    <InputComponent
-                      placeholder="Confirm New Password"
-                      className="w-full p-3 border-b border-gray-300 "
-                    />
-                  </Form.Item>
-                  <button className="w-full px-5 py-3 bg-[#DB2424] rounded text-white">
-                    Reset Password
-                  </button>
-                </Form>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section className="relative w-[92%] sm:w-[90%] mx-auto min-h-screen rounded-md overflow-hidden flex items-center justify-center py-10 sm:py-16 px-3">
+      {/* Decorative ribbon background */}
+      <Image
+        src={SVECTOR}
+        alt=""
+        fill
+        priority
+        className="lx:object-cover pointer-events-none select-none"
+      />
+
+      <div className="relative z-10 w-full md:max-w-[40%] px-2 sm:px-4">
+        {/* Heading */}
+        <h1 className="text-center font-serif text-xl sm:text-2xl leading-tight text-[#1A1A1A] mb-1.5">
+          Reset <span className="text-[#C1752C]">password</span>
+        </h1>
+        <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
+          Your password must be 8-10 characters long.
+        </p>
+
+        <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                New Password
+              </span>
+            }
+            name="password"
+            rules={[
+              { required: true, message: "Please enter a new password" },
+              { min: 6, message: "Password must be at least 6 characters" },
+            ]}
+            hasFeedback
+            className="mb-3.5"
+          >
+            <InputComponent
+              size="large"
+              icon={FaLock}
+              isPassword={true}
+              placeholder="New Password"
+              className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                Confirm Password
+              </span>
+            }
+            name="confirmPassword"
+            dependencies={["password"]}
+            rules={[
+              { required: true, message: "Please confirm your new password" },
+              { min: 6, message: "Password must be at least 6 characters" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Passwords do not match"));
+                },
+              }),
+            ]}
+            hasFeedback
+            className="mb-5"
+          >
+            <InputComponent
+              size="large"
+              icon={FaLock}
+              isPassword={true}
+              placeholder="Confirm New Password"
+              className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
+            />
+          </Form.Item>
+
+          <button
+            type="submit"
+            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
+          >
+            Reset Password
+          </button>
+        </Form>
+      </div>
     </section>
   );
 };

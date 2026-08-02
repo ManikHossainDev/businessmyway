@@ -1,22 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Form, Checkbox, message } from "antd";
+import { Form, message } from "antd";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
-import google from "@/assets/Authentication/google.png";
+import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/features/auth/authSlice";
-import { LoadingSpinner } from "@/components/UI/LoadingSpinner"; // Assuming you have a loading spinner component
-
+import { LoadingSpinner } from "@/components/UI/LoadingSpinner";
 
 interface LoginFormValues {
   email: string;
   password: string;
-  remember: boolean;
 }
 
 const Login: React.FC = () => {
@@ -32,11 +31,7 @@ const Login: React.FC = () => {
 
     try {
       const res = await login(loginData).unwrap();
-      console.log("Login Response: ", res);
-      
-      // Dispatch setUser action to store user and token in Redux and cookies
       dispatch(setUser({ user: res.data.user, token: res.data.accessToken }));
-      
       message.success("Logged in successfully");
       router.push("/");
     } catch (error: any) {
@@ -50,91 +45,111 @@ const Login: React.FC = () => {
   }
 
   return (
-    <section className="w-[90%] mx-auto h-[90vh] px-4 py-10 md:px-6 lg:px-10 bg-[#282828] mt-10 rounded-md">
+    <section className="relative w-[92%] sm:w-[90%] mx-auto min-h-screen rounded-md overflow-hidden flex items-center justify-center py-10 sm:py-16 px-3">
+      {/* Decorative ribbon background */}
+      <Image
+        src={SVECTOR}
+        alt=""
+        fill
+        priority
+        className="lx:object-cover pointer-events-none select-none"
+      />
 
-      <div className="w-full h-full px-4 py-10 md:px-6 lg:px-10">
-      <div className="w-full  mx-auto">
-          {/* Form Content */}
-          <div className="w-full max-w-[510px] mx-auto px-4 md:px-0">
-            <div className="bg-[#5E5E5E] shadow-lg rounded-lg border-[3px] border-white">
-              <div className="px-6 md:py-8 md:px-8 lg:px-10">
-                <h2 className="text-xl md:text-2xl font-semibold text-white text-center ">
-                Welcome back!
-                </h2>
-                <p className="text-center pb-5 text-white">Please enter your details</p>
-                <Form
-                  layout="vertical"
-                  onFinish={onFinish}
-                  className="space-y-3"
-                >
-                  <Form.Item
-                    label={<span className="text-white">Email</span>}
-                    name="email"
-                    rules={[
-                      { required: true, message: "Please enter your email" },
-                      { type: "email", message: "Please enter a valid email" },
-                    ]}
-                  >
-                    <InputComponent icon={MdEmail} placeholder="Email" />
-                  </Form.Item>
-                  <Form.Item
-                    label={<span className="text-white">Password</span>}
-                    name="password"
-                    rules={[
-                      { required: true, message: "Please enter your password" },
-                    ]}
-                  >
-                    <InputComponent placeholder="Password" icon={FaLock} isPassword={true} />
-                  </Form.Item>
-                  <div className="flex justify-between items-center text-white">
-                    <Form.Item name="remember" valuePropName="checked" >
-                      <Checkbox className="text-white">Remember me</Checkbox>
-                    </Form.Item>
-                    <Link
-                      href="/forgot-password"
-                      className="hover:underline -mt-5"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <button 
-                    type="submit" 
-                    className="w-full px-5 py-3 bg-red-500 rounded text-white disabled:opacity-50"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Logging in..." : "Log In"}
-                  </button>
-                </Form>
-                <div className="mt-3 text-center font-bold">
-                  <span className="text-white">
-                  Already have an account?
-                  </span>
-                  <Link
-                    href="/register"
-                    className="text-white font-semibold hover:underline ml-1"
-                  >
-                  Sign up
-                  </Link>
-                </div>
-                <div className="flex items-center space-x-2 mt-3">
-                  <div className="border border-white md:w-[30%] w-[25%]"></div>
-                  <h1 className="text-white md:text-xl" >Or login with</h1>
-                  <div className="border border-white md:w-[30%] w-[25%]"></div>
-                </div>
-                <Image
-                className="mx-auto mt-3"
-                    src={google}
-                    width={50}
-                    height={50}
-                    alt="google"
-                  />
-              </div>
-            </div>
+      <div className="relative z-10 w-full  md:max-w-[40%] px-2 sm:px-4">
+        {/* Tabs */}
+        <div className="flex mb-5 sm:mb-6 border-b-2 sm:border-b-4 border-[#E7E2D8]">
+          <button
+            type="button"
+            className="flex-1 pb-2 sm:pb-2.5 text-base sm:text-xl font-medium text-[#1A1A1A] border-b-2 sm:border-b-4 border-[#C1892F] -mb-[2px] sm:-mb-1"
+          >
+            Sign In
+          </button>
+          <Link
+            href="/register"
+            className="flex-1 pb-2 sm:pb-2.5 text-base sm:text-xl font-medium text-[#A39C8E] text-center hover:text-[#1A1A1A] transition-colors"
+          >
+            Create Account
+          </Link>
+        </div>
+
+        {/* Heading */}
+        <h1 className="text-center font-serif text-xl sm:text-2xl leading-tight text-[#1A1A1A] mb-1.5">
+          Welcome <span className="text-[#C1752C]">back</span>
+        </h1>
+        <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
+          Sign in to your Noir &amp; Co. account
+        </p>
+
+        <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                Email Address
+              </span>
+            }
+            name="email"
+            rules={[
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+            className="mb-3.5"
+          >
+            <InputComponent
+              size="large"
+              icon={MdEmail}
+              placeholder="Email Address"
+              className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                Password
+              </span>
+            }
+            name="password"
+            rules={[{ required: true, message: "Please enter your password" }]}
+            className="mb-1.5"
+          >
+            <InputComponent
+              placeholder="Password"
+              icon={FaLock}
+              isPassword={true}
+              size="large"
+              className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
+            />
+          </Form.Item>
+
+          <div className="flex justify-end mb-5">
+            <Link
+              href="/forgot-password"
+              className="text-sm sm:text-xl text-[#C1892F] hover:underline"
+            >
+              Forgot password?
+            </Link>
           </div>
-      </div>
-      </div>
 
-  </section>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase disabled:opacity-50"
+          >
+            {isLoading ? "Logging in..." : "Sign In"}
+          </button>
+        </Form>
+
+        <div className="mt-4 text-center text-sm sm:text-xl">
+          <span className="text-[#8F887A]">Don&apos;t have an account? </span>
+          <Link
+            href="/register"
+            className="text-[#C1892F] font-medium hover:underline"
+          >
+            Create one
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 };
 
