@@ -113,14 +113,21 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
     setCurrentPage(1);
   };
 
+  // Close icon now also clears the search (same function as the old "Clear search" button),
+  // then closes the panel if a parent onClose was provided.
+  const handleCloseClick = () => {
+    clearSearch();
+    onClose?.();
+  };
+
   return (
     <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
       <div className="xl:container mx-auto px-4 py-4">
         <br /> <br />
         <div className="w-full lg:w-[50%] mx-auto flex flex-col gap-4">
             {/* Top search bar */}
-                <div className="w-full  flex items-center gap-4 border-b border-gray-200 pb-4 mt-28">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className="shrink-0">
+                <div className="w-full  flex items-center gap-4 border-b-2 border-[#BF8D2F]  mt-28">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BF8D2F" strokeWidth="2" className="shrink-0">
                     <circle cx="11" cy="11" r="7" />
                     <path d="M21 21l-4.35-4.35" />
                 </svg>
@@ -135,42 +142,9 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
                     className="flex-1 text-lg outline-none placeholder:text-gray-400"
                 />
 
-                {hasSearched && (
-                    <div className="relative" ref={dropdownRef}>
-                    <button
-                        onClick={() => setSortOpen((o) => !o)}
-                        className="flex items-center gap-2 border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap"
-                    >
-                        {sortBy}
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M6 9l6 6 6-6" />
-                        </svg>
-                    </button>
-                    {sortOpen && (
-                        <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48">
-                        {sortOptions.map((opt) => (
-                            <button
-                            key={opt}
-                            onClick={() => {
-                                setSortBy(opt);
-                                setSortOpen(false);
-                                setCurrentPage(1);
-                            }}
-                            className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                opt === sortBy ? 'text-amber-700 font-medium' : 'text-gray-700'
-                            }`}
-                            >
-                            {opt}
-                            </button>
-                        ))}
-                        </div>
-                    )}
-                    </div>
-                )}
-
                 <button
-                    onClick={onClose}
-                    className="text-gray-500 hover:text-gray-800 shrink-0"
+                    onClick={handleCloseClick}
+                    className="text-red-500 hover:text-gray-800 shrink-0"
                     aria-label="Close search"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -181,8 +155,8 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
 
                 {/* STATE 1: nothing searched yet — popular searches (Image 1) */}
                 {!hasSearched && (
-                <div className="mt-4">
-                    <p className="text-xs text-gray-400 mb-2">Popular Searches</p>
+                <div className="mt-2">
+                    <p className="text-xs text-gray-400 mb-2 text-center">Popular Searches</p>
                     <div className="flex flex-wrap gap-2">
                     {popularSearches.map((term) => (
                         <button
@@ -205,15 +179,41 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
               <p className="text-sm text-gray-500">
                 {filteredProducts.length} results for &quot;{submittedQuery}&quot;
               </p>
-              <button
-                onClick={clearSearch}
-                className="text-xs text-[#BF8D2F] hover:underline"
-              >
-                Clear search
-              </button>
+
+              {/* Sort dropdown moved here, where "Clear search" used to be */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setSortOpen((o) => !o)}
+                  className="flex items-center gap-2 border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap"
+                >
+                  {sortBy}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {sortOpen && (
+                  <div className="absolute z-40 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48">
+                    {sortOptions.map((opt) => (
+                      <button
+                        key={opt}
+                        onClick={() => {
+                          setSortBy(opt);
+                          setSortOpen(false);
+                          setCurrentPage(1);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                          opt === sortBy ? 'text-amber-700 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-px border border-gray-200 bg-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-px border border-gray-200">
               {paginatedProducts.length > 0 ? (
                 paginatedProducts.map((product) => (
                   <div key={product.id} className="bg-white">

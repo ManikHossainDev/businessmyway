@@ -4,7 +4,7 @@ import logo from "@/assets/logo/logo.png";
 import Image from "next/image";
 import ActiveLink from "./ActiveLink"; // Assuming this component works fine
 import Link from "next/link";
-import { Drawer, Button, Dropdown } from "antd";
+import { Drawer, Button,  } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
@@ -78,22 +78,6 @@ const Navbar = () => {
     );
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push("/login");
-  };
-
-  const menuItems = [
-    {
-      key: "3",
-      label: (
-        <div className="cursor-pointer px-4 py-1" onClick={handleLogout}>
-          Logout
-        </div>
-      ),
-    },
-  ];
-
   return (
     <nav className="border-b border-[#E5E5E5] shadow-[0px_4px_16px_0px_#00000026]">
       <div className="xl:container mx-auto flex justify-between items-center py-3 px-2 xl:px-0">
@@ -133,12 +117,12 @@ const Navbar = () => {
 
           {/* Icon actions */}
           <div className="flex items-center gap-4">
-            <button aria-label="Search">
+            <Link href="/searchresult" aria-label="Search">
               <FiSearch className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-            </button>
-            <button aria-label="Wishlist">
+            </Link>
+            <Link href="/wishlist" aria-label="Wishlist">
               <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-            </button>
+            </Link>
             <button aria-label="Bag" onClick={showCart} className="relative">
               <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
               {cartItems.length > 0 && (
@@ -149,11 +133,9 @@ const Navbar = () => {
             </button>
 
             {user ? (
-              <Dropdown menu={{ items: menuItems }} placement="top" arrow>
-                <button aria-label="Account" className="cursor-pointer">
+                <Link href="/profile" aria-label="Account" className="cursor-pointer">
                   <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-                </button>
-              </Dropdown>
+                </Link>
             ) : (
               <Link href="/login">
                 <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
