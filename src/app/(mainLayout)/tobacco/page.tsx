@@ -19,7 +19,7 @@ const Page = () => {
 
       {/* Description */}
       <p className="text-gray-500 text-base md:text-lg xl:text-xl leading-relaxed max-w-xl">
-       Pipe, rolling, and loose leaf tobacco curated from the world's most celebrated growing regions — Virginia, Burley, and Oriental blends.
+       Pipe, rolling, and loose leaf tobacco curated from the world&apos;s most celebrated growing regions — Virginia, Burley, and Oriental blends.
       </p>
     </div>
 

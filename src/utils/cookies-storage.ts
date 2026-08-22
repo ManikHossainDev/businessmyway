@@ -8,7 +8,7 @@ const cookieOptions = {
   path: '/',
 };
 
-export const setToCookies = (key: string, value: string, options?: {}) => {
+export const setToCookies = (key: string, value: string, options?: Cookies.CookieAttributes) => {
   if (!key) {
     return;
   }

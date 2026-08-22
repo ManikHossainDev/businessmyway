@@ -6,6 +6,7 @@ import SearchResultCard from './SearchResultCard';
 // ---------------------------------------------
 // Types
 // ---------------------------------------------
+
 export interface Product {
   id: number;
   name: string;
@@ -192,7 +193,7 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
                   </svg>
                 </button>
                 {sortOpen && (
-                  <div className="absolute z-40 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48">
+                  <div className="absolute z-40 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg  w-48">
                     {sortOptions.map((opt) => (
                       <button
                         key={opt}
@@ -222,7 +223,7 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
                 ))
               ) : (
                 <p className="text-gray-400 col-span-full p-8 text-center bg-white">
-                  No products found for &quot;{submittedQuery}&quot;.
+                  No products found for &quot;{submittedQuery}&quot;
                 </p>
               )}
             </div>

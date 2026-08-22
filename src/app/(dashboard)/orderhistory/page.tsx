@@ -111,11 +111,8 @@ const OrderRow: React.FC<{ order: Order }> = ({ order }) => {
   );
 };
 
-interface OrderHistoryProps {
-  orders?: Order[];
-}
-
-const OrderHistory: React.FC<OrderHistoryProps> = ({ orders = ordersData }) => {
+const OrderHistory = () => {
+  const orders = ordersData;
   return (
     <div className="font-sans mb-7">
       <div className="">

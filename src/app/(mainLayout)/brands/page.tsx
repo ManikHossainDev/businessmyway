@@ -14,7 +14,7 @@ const Page = () => {
 
       {/* Heading */}
       <h1 className="font-serif text-5xl md:text-6xl mb-4">
-        <span className="text-gray-900 md:font-corvinus">The World's Finest </span>
+        <span className="text-gray-900 md:font-corvinus">The World&apos;s Finest </span>
         <span className="text-[#BF8D2F] italic md:font-corvinus">Brands </span>
       </h1>
 
