@@ -7,18 +7,39 @@ import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdEmail } from "react-icons/md";
-
+import { useForgetPasswordMutation } from "@/redux/features/auth/authApi";
+import Swal from "sweetalert2";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/auth/authSlice";
 interface ForgotPasswordFormValues {
   email: string;
 }
-
 const ForgotPassword: React.FC = () => {
   const router = useRouter();
-
-  const onFinish = (values: ForgotPasswordFormValues) => {
-    console.log(values);
-    message.success("OTP has been sent to your email.");
-    router.push("/verify-email");
+  const dispatch = useAppDispatch();
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
+  const onFinish = async (values: ForgotPasswordFormValues) => {
+    try {
+      // ✅ Fix 1: Correctly pass email object
+      const res = await forgetPassword({ email: values.email }).unwrap();
+      console.log(res)
+      // ✅ Fix 2: Check the correct status code property
+      if (res?.statusCode === 200 ) {
+         router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+         dispatch(setUser({ token: res.data?.forgotPassToken }));
+      }
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      
+      // ✅ Fix 3: Better error handling with fallback
+      const errorMessage =  error?.data?.message ||  error?.message;
+      
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -26,10 +47,11 @@ const ForgotPassword: React.FC = () => {
       {/* Decorative ribbon background */}
       <Image
         src={SVECTOR}
-        alt=""
+        alt="Decoration"
         fill
         priority
-        className="lx:object-cover pointer-events-none select-none"
+        // ✅ Fix 4: Corrected typo from 'lx' to 'xl'
+        className="xl:object-cover pointer-events-none select-none"
       />
 
       <div className="relative z-10 w-full md:max-w-[40%] px-2 sm:px-4">
@@ -69,9 +91,11 @@ const ForgotPassword: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
+            disabled={isLoading}
+            // ✅ Fix 5: Added disabled state during loading
+            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
           >
-            Send OTP
+            {isLoading ? "Sending..." : "Send OTP"}
           </button>
         </Form>
 

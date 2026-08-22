@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import GifRevealWrapperCard from '@/components/UI/GifRevealWrapperCard';
 import GifRevealWrapper from '@/components/UI/GifRevealWrapper';
+import { article } from 'framer-motion/client';
 
 const AccessoriesCard = ({ product }: { product: any }) => {
   return (
@@ -52,12 +53,12 @@ const AccessoriesCard = ({ product }: { product: any }) => {
             >
               <GifRevealWrapper borderSize={4} className="flex-1">
                 <button
-                    type="button"
-                    className="w-full h-full rounded-sm bg-[#BF8D2F] px-3 py-3 text-xs md:text-sm font-semibold
+                  type="button"
+                  className="w-full h-full rounded-sm bg-[#BF8D2F] px-3 py-3 text-xs md:text-sm font-semibold
                             text-white transition-colors hover:bg-[#a67809]
                             flex items-center justify-center"
                 >
-                    <span>Explore Collection</span>
+                  <span>Add to Cart</span>
                 </button>
               </GifRevealWrapper>
               <button

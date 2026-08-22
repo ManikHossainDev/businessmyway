@@ -7,33 +7,34 @@ import AgeGate from "@/components/UI/AgeGate";
 const corvinusSkyline = localFont({
   src: "./fonts/OPTICorvinus-Skyline.otf",
   variable: "--font-corvinus-skyline",
-  weight: "400", // .otf static font, তাই single weight
+  weight: "400",
   style: "normal",
 });
 
 export const metadata: Metadata = {
-  title: 'Business May Way',
+  title: 'British Smokes',
   description: 'Shop a wide selection of cigarette brands online. Fast delivery, competitive prices, and secure age-verified checkout for adult smokers 18+.'
 }
 
-
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="en">
       <body
         className={`${corvinusSkyline.variable} antialiased`}
-         suppressHydrationWarning
+        suppressHydrationWarning
       >
         <Providers>
           <AgeGate>
-          {children}
+            {children}
           </AgeGate>
-          </Providers>
+        </Providers>
       </body>
     </html>
   );
 }
+
+export default RootLayout;

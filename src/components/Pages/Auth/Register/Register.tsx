@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Form, message } from "antd";
+import { Checkbox, Form, Spin } from "antd";
+import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdEmail } from "react-icons/md";
-import { FaLock, FaUserCircle } from "react-icons/fa";
+import { FaLock, FaUserCircle, FaCalendarAlt } from "react-icons/fa";
 import { GiPhone } from "react-icons/gi";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
-import { LoadingSpinner } from "@/components/UI/LoadingSpinner";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/auth/authSlice";
 
 interface RegisterFormValues {
   firstName: string;
@@ -18,37 +22,96 @@ interface RegisterFormValues {
   password: string;
   email: string;
   phone: string;
+  dateOfBirth: string;
+  agreeTermsAndConditions: boolean;
 }
 
 const Register: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [register, { isLoading }] = useRegisterMutation();
+
+  // Initial page loading
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const onFinish = async (values: RegisterFormValues) => {
     const registrationData = {
       name: `${values.firstName} ${values.lastName}`,
       email: values.email,
       password: values.password,
+      confirmPassword: values.password,
       phone: values.phone,
+      dateOfBirth: values.dateOfBirth,
+      agreeTermsAndConditions: values.agreeTermsAndConditions,
     };
 
     try {
       const res = await register(registrationData).unwrap();
-      console.log("Registration Response: ", res);
-      message.success(
-        "Registration successful! Please check your email for verification."
-      );
-      router.push("/login");
+      if (res?.statusCode === 201) {
+        dispatch(setUser({ token: res.data.verificationToken}));
+        router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
+        Swal.fire({
+          title: "Registration successful!",
+          text: "Please check your email for verification.",
+          icon: "success",
+        });
+      }
     } catch (error: any) {
       console.error("Registration Error: ", error);
-      message.error(
-        error?.data?.message || "Something went wrong during registration"
-      );
+
+      const validationErrors = error?.data?.errors;
+
+      if (
+        Array.isArray(validationErrors) &&
+        validationErrors.length > 0
+      ) {
+        Swal.fire({
+          title: "Oops!",
+          html: validationErrors
+            .map((err: any) => err.message)
+            .join("<br/>"),
+          icon: "error",
+        });
+      } else {
+        Swal.fire({
+          title: "Oops!",
+          text:
+            error?.data?.message ||
+            "Something went wrong during registration",
+          icon: "error",
+        });
+      }
     }
   };
 
+  // ---------------------------------------
+  // Initial Page Loading
+  // ---------------------------------------
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // ---------------------------------------
+  // Registration API Loading
+  // ---------------------------------------
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
@@ -62,7 +125,7 @@ const Register: React.FC = () => {
         className="lx:object-cover pointer-events-none select-none"
       />
 
-      <div className="relative z-10 w-full md:max-w-[40%] px-2 sm:px-4">
+      <div className="relative z-10 w-full  md:w-[60%] lg:w-[40%] mx-auto px-2 sm:px-4">
         {/* Tabs */}
         <div className="flex mb-5 sm:mb-6 border-b-2 sm:border-b-4 border-[#E7E2D8]">
           <Link
@@ -71,6 +134,7 @@ const Register: React.FC = () => {
           >
             Sign In
           </Link>
+
           <button
             type="button"
             className="flex-1 pb-2 sm:pb-2.5 text-base sm:text-xl font-medium text-[#1A1A1A] border-b-2 sm:border-b-4 border-[#C1892F] -mb-[2px] sm:-mb-1"
@@ -81,13 +145,21 @@ const Register: React.FC = () => {
 
         {/* Heading */}
         <h1 className="text-center font-serif text-xl sm:text-2xl leading-tight text-[#1A1A1A] mb-1.5">
-          Create an <span className="text-[#C1752C]">account</span>
+          Create an{" "}
+          <span className="text-[#C1752C]">account</span>
         </h1>
+
         <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
           Join Noir &amp; Co. for exclusive access
         </p>
 
-        <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
+        {/* Registration Form */}
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          requiredMark={false}
+        >
+          {/* First Name + Last Name */}
           <div className="flex flex-col sm:flex-row gap-3.5">
             <Form.Item
               label={
@@ -97,7 +169,10 @@ const Register: React.FC = () => {
               }
               name="firstName"
               rules={[
-                { required: true, message: "Please enter your first name" },
+                {
+                  required: true,
+                  message: "Please enter your first name",
+                },
               ]}
               className="mb-3.5 flex-1"
             >
@@ -117,7 +192,10 @@ const Register: React.FC = () => {
               }
               name="lastName"
               rules={[
-                { required: true, message: "Please enter your last name" },
+                {
+                  required: true,
+                  message: "Please enter your last name",
+                },
               ]}
               className="mb-3.5 flex-1"
             >
@@ -130,6 +208,7 @@ const Register: React.FC = () => {
             </Form.Item>
           </div>
 
+          {/* Password */}
           <Form.Item
             label={
               <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
@@ -138,7 +217,10 @@ const Register: React.FC = () => {
             }
             name="password"
             rules={[
-              { required: true, message: "Please enter your password" },
+              {
+                required: true,
+                message: "Please enter your password",
+              },
             ]}
             className="mb-3.5"
           >
@@ -151,6 +233,7 @@ const Register: React.FC = () => {
             />
           </Form.Item>
 
+          {/* Email */}
           <Form.Item
             label={
               <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
@@ -159,8 +242,14 @@ const Register: React.FC = () => {
             }
             name="email"
             rules={[
-              { required: true, message: "Please enter your email" },
-              { type: "email", message: "Please enter a valid email" },
+              {
+                required: true,
+                message: "Please enter your email",
+              },
+              {
+                type: "email",
+                message: "Please enter a valid email",
+              },
             ]}
             className="mb-3.5"
           >
@@ -172,6 +261,7 @@ const Register: React.FC = () => {
             />
           </Form.Item>
 
+          {/* Phone */}
           <Form.Item
             label={
               <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
@@ -180,9 +270,12 @@ const Register: React.FC = () => {
             }
             name="phone"
             rules={[
-              { required: true, message: "Please enter your phone number" },
+              {
+                required: true,
+                message: "Please enter your phone number",
+              },
             ]}
-            className="mb-5"
+            className="mb-3.5"
           >
             <InputComponent
               size="large"
@@ -192,6 +285,99 @@ const Register: React.FC = () => {
             />
           </Form.Item>
 
+          {/* Date of Birth */}
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                Date of Birth
+              </span>
+            }
+            name="dateOfBirth"
+            rules={[
+              {
+                required: true,
+                message: "Please enter your date of birth",
+              },
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+
+                  const birthDate = new Date(value);
+                  const today = new Date();
+
+                  const cutoff = new Date(
+                    today.getFullYear() - 18,
+                    today.getMonth(),
+                    today.getDate()
+                  );
+
+                  if (birthDate > cutoff) {
+                    return Promise.reject(
+                      new Error(
+                        "You must be at least 18 years old to register"
+                      )
+                    );
+                  }
+
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            className="mb-5"
+          >
+            <InputComponent
+              size="large"
+              icon={FaCalendarAlt}
+              type="date"
+              placeholder="Date of Birth"
+              className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
+            />
+          </Form.Item>
+
+          {/* Terms & Conditions / Privacy Policy */}
+          <Form.Item
+            name="agreeTermsAndConditions"
+            valuePropName="checked"
+            initialValue={false}
+            className="mb-5"
+            rules={[
+              {
+                validator: (_, value) =>
+                  value
+                    ? Promise.resolve()
+                    : Promise.reject(
+                        new Error(
+                          "You must agree to the terms and conditions"
+                        )
+                      ),
+              },
+            ]}
+          >
+            <Checkbox className="!items-start [&>span:last-child]:text-sm [&>span:last-child]:sm:text-base">
+              <span className="text-[#4A453D]">
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="text-[#C1892F] font-medium hover:underline"
+                >
+                  Terms &amp; Conditions
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  className="text-[#C1892F] font-medium hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+              </span>
+            </Checkbox>
+          </Form.Item>
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -201,8 +387,12 @@ const Register: React.FC = () => {
           </button>
         </Form>
 
+        {/* Already have account */}
         <div className="mt-4 text-center text-sm sm:text-xl">
-          <span className="text-[#8F887A]">Already have an account? </span>
+          <span className="text-[#8F887A]">
+            Already have an account?{" "}
+          </span>
+
           <Link
             href="/login"
             className="text-[#C1892F] font-medium hover:underline"

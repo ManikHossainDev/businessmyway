@@ -34,7 +34,7 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
       open={open}
       closable={false}
       width={453}
-      bodyStyle={{ padding: 0, display: "flex", flexDirection: "column" }}
+      styles={{ body: { padding: 0, display: "flex", flexDirection: "column" } }}
     >
       {/* Header */}
       <div className="z-[9999] flex items-center justify-between px-6 py-5 border-b border-[#EDEDED]">

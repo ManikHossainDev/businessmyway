@@ -2,10 +2,15 @@
 "use client";
 import Image from "next/image";
 import { Form, message } from "antd";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdOutlinePassword } from "react-icons/md";
+import { useVerifyEmailMutation } from "@/redux/features/auth/authApi";
+import { selectToken, setUser } from "@/redux/features/auth/authSlice";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { useAppDispatch } from "@/redux/hooks";
 
 interface OTPFormValues {
   otp: string;
@@ -13,11 +18,46 @@ interface OTPFormValues {
 
 const VerifyEmail: React.FC = () => {
   const router = useRouter();
+  const token = useSelector(selectToken);
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+  // Get email from URL
+  const email = searchParams.get("email");
+  const [verifyEmail] = useVerifyEmailMutation();
+  
+  const onFinish = async (values: OTPFormValues) => {
+    // ✅ Fix 1: Properly structure the data object with commas
+    const data = {
+      forgotPassToken: token,
+      email: email,
+      otp: values?.otp,
+    };
 
-  const onFinish = (values: OTPFormValues) => {
-    console.log("OTP Verification Data: ", values);
-    // Assuming the OTP verification is successful
-    router.push("/reset-password");
+    try {
+      // ✅ Fix 1: Pass the data object to the mutation
+      const res = await verifyEmail(data).unwrap();
+      console.log(res);
+      
+      // ✅ Fix 2: Check the correct status code property
+      if (res?.statusCode === 200 || res?.success === true) {
+        router.push("/reset-password");
+        dispatch(setUser({ token: res.data?.accessToken }));
+      }
+    } catch (error: any) {
+      console.error("Email verification error:", error);
+      
+      // ✅ Fix 3: Better error handling with proper fallback
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        "Failed to verify email. Please try again.";
+      
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
   };
 
   const handleResend = () => {
@@ -49,7 +89,7 @@ const VerifyEmail: React.FC = () => {
             name="otp"
             rules={[
               { required: true, message: "Please enter the OTP" },
-              { len: 6, message: "OTP must be 6 digits" },
+              { len: 5, message: "OTP must be 5 digits" },
             ]}
             className="mb-5"
           >

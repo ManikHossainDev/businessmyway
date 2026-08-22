@@ -12,6 +12,7 @@ import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { LoadingSpinner } from "@/components/UI/LoadingSpinner";
+import Swal from "sweetalert2";
 
 interface LoginFormValues {
   email: string;
@@ -31,12 +32,19 @@ const Login: React.FC = () => {
 
     try {
       const res = await login(loginData).unwrap();
-      dispatch(setUser({ user: res.data.user, token: res.data.accessToken }));
-      message.success("Logged in successfully");
-      router.push("/");
+      console.log("Login Response: ", res);
+      if(res?.statusCode === 200){
+        dispatch(setUser({ user: res.data.user, token: res.data.tokens?.accessToken }));
+        message.success("Logged in successfully");
+        router.push("/");
+      }
     } catch (error: any) {
       console.error("Login Error: ", error);
-      message.error(error?.data?.message || "Something went wrong during login");
+      Swal.fire({
+                title: "Some Thing wrong",
+                text: `${error?.data?.message}`,
+                icon: "error",
+              });
     }
   };
 

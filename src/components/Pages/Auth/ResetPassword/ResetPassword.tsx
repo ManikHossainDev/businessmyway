@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { FaLock } from "react-icons/fa";
+import { useResitPasswordMutation } from "@/redux/features/auth/authApi";
 
 interface ResetPasswordFormValues {
   password: string;
@@ -14,11 +15,9 @@ interface ResetPasswordFormValues {
 
 const ResetPassword: React.FC = () => {
   const router = useRouter();
-
+  const [ResitPassword] = useResitPasswordMutation()
   const onFinish = (values: ResetPasswordFormValues) => {
-    console.log("Password reset successfully", values);
-    message.success("Password reset successfully!");
-    router.push("/login");
+     
   };
 
   return (

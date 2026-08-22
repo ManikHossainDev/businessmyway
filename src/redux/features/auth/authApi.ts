@@ -5,7 +5,7 @@ const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auth/login",
+        url: "auth/login",
         method: "POST",
         body: data,
       }),
@@ -20,7 +20,7 @@ const authApi = baseApi.injectEndpoints({
 
     register: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auth/register",
+        url: "auth/register",
         method: "POST",
         body: data,
       }),
@@ -28,7 +28,7 @@ const authApi = baseApi.injectEndpoints({
 
     forgetPassword: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auth/forgot-password",
+        url: "auth/forgot-password",
         method: "POST",
         body: data,
       }),
@@ -36,7 +36,7 @@ const authApi = baseApi.injectEndpoints({
 
     resitPassword: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/auth/reset-password`,
+        url: `auth/reset-password`,
         method: "POST",
         body: data,
       }),
@@ -52,14 +52,14 @@ const authApi = baseApi.injectEndpoints({
 
     verifyAccount: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/auth/verify-email`,
+        url: `/auth/verify-email`,
         method: "POST",
         body: data,
       }),
     }),
     verifyEmail: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/auth/verify-email`,
+        url: `auth/verify-reset-code`,
         method: "POST",
         body: data,
       }),
@@ -76,7 +76,7 @@ const authApi = baseApi.injectEndpoints({
     }),
     GetAllServices: builder.query({
       query: () => ({
-        url: `/api/v1/services`,
+        url: `services`,
         method: "GET",
       }),
     }),
@@ -93,5 +93,5 @@ export const {
   useVerifyAccountMutation,
   useGetSingleUserQuery,
   useGoogleLoginMutation,
-  useGetAllServicesQuery,  
+  useGetAllServicesQuery,
 } = authApi;

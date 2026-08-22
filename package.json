@@ -1,9 +1,9 @@
 {
-  "name": "travelagency",
+  "name": "British Smokes",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3232",                 
+    "dev": "next dev -p 3232",
     "build": "next build",
     "start": "next start -p 3232",
     "lint": "next lint"
@@ -22,7 +22,8 @@
     "react-responsive-pagination": "^2.9.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "sweetalert2": "^11.26.25"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
