@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Form } from "antd";
+import { Form, Spin } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdOutlinePassword } from "react-icons/md";
 import { useForgetPasswordMutation, useVerifyEmailMutation } from "@/redux/features/auth/authApi";
-import { selectToken, setUser } from "@/redux/features/auth/authSlice";
+import { selectForgotPassToken, setForgotPassToken, setResetToken } from "@/redux/features/auth/authSlice";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useAppDispatch } from "@/redux/hooks";
-import { CloudCog } from "lucide-react";
 
 interface OTPFormValues {
   otp: string;
@@ -19,13 +19,22 @@ interface OTPFormValues {
 
 const VerifyEmail: React.FC = () => {
   const router = useRouter();
-  const token = useSelector(selectToken);
+  const token = useSelector(selectForgotPassToken);
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
 
   const email = searchParams.get("email");
-  const [verifyEmail] = useVerifyEmailMutation();
+  const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
   const [forgetPassword] = useForgetPasswordMutation();
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const onFinish = async (values: OTPFormValues) => {
     const data = {
@@ -38,8 +47,8 @@ const VerifyEmail: React.FC = () => {
       console.log("verifyEmail", res);
 
       if (res?.statusCode === 200) {
+        dispatch(setResetToken(res.data?.accessToken));
         router.push("/reset-password");
-        dispatch(setUser({ token: res.data?.accessToken }));
       }
     } catch (error: any) {
       console.error("Email verification error:", error);
@@ -69,7 +78,7 @@ const VerifyEmail: React.FC = () => {
           text: "A new code has been sent to your email",
           icon: "success",
         });
-        dispatch(setUser({ token: res.data?.forgotPassToken }));
+        dispatch(setForgotPassToken(res.data?.forgotPassToken));
       }
     } catch (error: any) {
       console.error("Forgot password error:", error);
@@ -83,6 +92,14 @@ const VerifyEmail: React.FC = () => {
       });
     }
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <section className="relative w-[92%] sm:w-[90%] mx-auto min-h-screen rounded-md overflow-hidden flex items-center justify-center py-10 sm:py-16 px-3">
@@ -123,9 +140,10 @@ const VerifyEmail: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
+            disabled={isLoading}
+            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
           >
-            Verify
+            {isLoading ? "Verifying..." : "Verify"}
           </button>
         </Form>
 

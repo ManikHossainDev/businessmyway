@@ -8,12 +8,13 @@ import Rectangle from "@/assets/home/Rectangle.gif";
 import GifRevealWrapper from "./GifRevealWrapper";
 import Link from "next/link";
 import Image from "next/image";
+import { getFromCookies, setToCookies } from "@/utils/cookies-storage";
 
 interface AgeGateProps {
   children: ReactNode;
 }
 
-const AGE_STORAGE_KEY = "isAdult";
+const AGE_COOKIE_KEY = "isAdult";
 
 const AgeGate = ({ children }: AgeGateProps) => {
   const route = useRouter();
@@ -22,25 +23,15 @@ const AgeGate = ({ children }: AgeGateProps) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Mark as hydrated and check localStorage
     setIsHydrated(true);
-
-    if (typeof window !== "undefined") {
-      const isAdult = window.localStorage.getItem(AGE_STORAGE_KEY);
-      if (isAdult === "true") {
-        setShowGate(false);
-      } else {
-        setShowGate(true);
-      }
-    }
+    const isAdult = getFromCookies(AGE_COOKIE_KEY);
+    setShowGate(isAdult !== "true");
   }, []);
 
   const handleConfirm = () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(AGE_STORAGE_KEY, "true");
-      setShowGate(false);
-      route.push("/login");
-    }
+    setToCookies(AGE_COOKIE_KEY, "true");
+    setShowGate(false);
+    route.push("/login");
   };
 
   const handleDeny = () => {

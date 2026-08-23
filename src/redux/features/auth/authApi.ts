@@ -1,3 +1,4 @@
+"use client";
 
 import { baseApi } from "@/redux/api/baseApi";
 
@@ -57,6 +58,13 @@ const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    resendOtp: builder.mutation({
+      query: (data) => ({
+        url: `/auth/resend-otp`,
+        method: "POST",
+        body: data,
+      }),
+    }),
     verifyEmail: builder.mutation({
       query: (data) => ({
         url: `auth/verify-reset-code`,
@@ -91,6 +99,7 @@ export const {
   useChangePasswordMutation,
   useVerifyEmailMutation,
   useVerifyAccountMutation,
+  useResendOtpMutation,
   useGetSingleUserQuery,
   useGoogleLoginMutation,
   useGetAllServicesQuery,

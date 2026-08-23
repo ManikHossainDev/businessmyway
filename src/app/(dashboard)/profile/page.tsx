@@ -1,4 +1,141 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { Form, Input, Spin } from "antd";
+import Image from "next/image";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import {
+  useDeleteProfileMutation,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "@/redux/features/Profile/Profile";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout, setUser } from "@/redux/features/auth/authSlice";
+import { formatJoinDate, resolveMediaUrl } from "@/utils/media";
+
+const FALLBACK_AVATAR = "https://i.ibb.co/9kGRkyzV/profile1.png";
+
+type ProfileFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+};
+
+const splitName = (fullName?: string) => {
+  const parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] || "",
+    lastName: parts.slice(1).join(" "),
+  };
+};
+
 const Page = () => {
+  const [form] = Form.useForm<ProfileFormValues>();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const { data, isLoading, isError } = useGetProfileQuery({});
+  const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
+  const [deleteProfile, { isLoading: isDeleting }] = useDeleteProfileMutation();
+
+  const user = data?.data;
+  const currentAvatar = avatarPreview || resolveMediaUrl(user?.avatar) || FALLBACK_AVATAR;
+  const joinDate = formatJoinDate(user?.createdAt);
+
+  useEffect(() => {
+    if (!user) return;
+    const { firstName, lastName } = splitName(user.name);
+    form.setFieldsValue({
+      firstName,
+      lastName,
+      email: user.email || "",
+      phone: user.phone || "",
+    });
+  }, [user, form]);
+
+  const onFinish = async (values: ProfileFormValues) => {
+    try {
+      const name = `${values.firstName} ${values.lastName}`.trim();
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("phone", values.phone || "");
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      const res = await updateProfile(formData).unwrap();
+
+      if (res?.data) {
+        dispatch(setUser({ user: res.data }));
+      }
+
+      setAvatarFile(null);
+      setAvatarPreview(null);
+
+      Swal.fire({
+        title: "Saved",
+        text: res?.message || "Profile updated successfully.",
+        icon: "success",
+      });
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error?.data?.message || "Failed to update profile.",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirm = await Swal.fire({
+      title: "Delete account?",
+      text: "This will deactivate your account.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#C1892F",
+      confirmButtonText: "Yes, delete",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await deleteProfile(undefined).unwrap();
+      dispatch(logout());
+      Swal.fire({
+        title: "Deleted",
+        text: "Your account has been deleted.",
+        icon: "success",
+      });
+      router.push("/login");
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error?.data?.message || "Failed to delete account.",
+        icon: "error",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="text-sm text-red-600">
+        Could not load profile. Please login again.
+      </p>
+    );
+  }
+
   return (
     <div className="">
       <div className="max-w-2xl">
@@ -7,50 +144,61 @@ const Page = () => {
           <span className="text-[#B8863B]">Details</span>
         </h2>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">
-              First Name
-            </label>
-            <input
-              type="text"
-              defaultValue="James"
-              className="w-full border border-gray-300 rounded-sm px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">
-              Last Nam
-            </label>
-            <input
-              type="text"
-              defaultValue="Whitmore"
-              className="w-full border border-gray-300 rounded-sm px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
-          </div>
-        </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          requiredMark={false}
+        >
 
-        <div className="mb-6">
-          <label className="block text-sm text-gray-700 mb-2">
-            Email Address
-          </label>
-          <input
-            type="email"
-            placeholder="Email Address"
-            className="w-full border border-gray-300 rounded-sm px-3 py-2.5 text-sm text-gray-400 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-          />
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-2">
+            <Form.Item
+              label={<span className="text-sm text-gray-700">First Name</span>}
+              name="firstName"
+              rules={[{ required: true, message: "Please enter first name" }]}
+            >
+              <Input className="!rounded-sm !py-2.5" />
+            </Form.Item>
+            <Form.Item
+              label={<span className="text-sm text-gray-700">Last Name</span>}
+              name="lastName"
+            >
+              <Input className="!rounded-sm !py-2.5" />
+            </Form.Item>
+          </div>
 
-        <div>
-          <label className="block text-sm text-gray-700 mb-2">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            placeholder="Email Address"
-            className="w-full border border-gray-300 rounded-sm px-3 py-2.5 text-sm text-gray-400 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-          />
-        </div>
+          <Form.Item
+            label={<span className="text-sm text-gray-700">Email Address</span>}
+            name="email"
+          >
+            <Input className="!rounded-sm !py-2.5" readOnly />
+          </Form.Item>
+
+          <Form.Item
+            label={<span className="text-sm text-gray-700">Phone Number</span>}
+            name="phone"
+          >
+            <Input className="!rounded-sm !py-2.5" />
+          </Form.Item>
+
+          <div className="mt-2 flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="rounded-[3px] bg-[#C1892F] px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-white hover:bg-[#AD7A28] disabled:opacity-60"
+            >
+              {isSaving ? "Saving..." : "Save Changes"}
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="rounded-[3px] border border-red-300 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-red-600 hover:bg-red-50 disabled:opacity-60"
+            >
+              {isDeleting ? "Deleting..." : "Delete Account"}
+            </button>
+          </div>
+        </Form>
       </div>
     </div>
   );

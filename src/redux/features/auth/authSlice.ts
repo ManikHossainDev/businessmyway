@@ -6,64 +6,102 @@ import { getFromCookies, setToCookies, removeFromCookies } from "@/utils/cookies
 export type TUser = {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   _id?: string;
   id: string;
+  phone?: string;
+  avatar?: string;
+  createdAt?: string;
 };
 
-// Define the type for the auth state
 type TAuthState = {
   user: TUser | null;
   token: string | null;
+  refreshToken: string | null;
+  forgotPassToken: string | null;
+  resetToken: string | null;
 };
 
-// Initialize state from cookies if available
-const getUserFromCookies = () => {
-  const userCookie = getFromCookies('user');
-  return userCookie ? JSON.parse(userCookie) : null;
-};
-
-const getTokenFromCookies = () => {
-  return getFromCookies('token');
+const parseUserCookie = () => {
+  const userCookie = getFromCookies("user");
+  if (!userCookie) return null;
+  try {
+    return JSON.parse(userCookie);
+  } catch {
+    return null;
+  }
 };
 
 const initialState: TAuthState = {
-  user: getUserFromCookies(),
-  token: getTokenFromCookies(),
+  user: parseUserCookie(),
+  token: getFromCookies("token"),
+  refreshToken: getFromCookies("refreshToken"),
+  forgotPassToken: getFromCookies("forgotPassToken"),
+  resetToken: getFromCookies("resetToken"),
 };
 
-// Create the slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { user, token } = action.payload;
-      state.user = user;
-      state.token = token;
-      
-      // Store user and token in cookies
+      const { user, token, refreshToken } = action.payload;
+
       if (user) {
-        setToCookies('user', JSON.stringify(user));
+        state.user = user;
+        setToCookies("user", JSON.stringify(user));
       }
+
       if (token) {
-        setToCookies('token', token);
+        state.token = token;
+        setToCookies("token", token);
+        state.forgotPassToken = null;
+        state.resetToken = null;
+        removeFromCookies("forgotPassToken");
+        removeFromCookies("resetToken");
+      }
+
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        setToCookies("refreshToken", refreshToken);
+      }
+    },
+    setForgotPassToken: (state, action) => {
+      state.forgotPassToken = action.payload;
+      if (action.payload) {
+        setToCookies("forgotPassToken", action.payload);
+      } else {
+        removeFromCookies("forgotPassToken");
+      }
+    },
+    setResetToken: (state, action) => {
+      state.resetToken = action.payload;
+      if (action.payload) {
+        setToCookies("resetToken", action.payload);
+      } else {
+        removeFromCookies("resetToken");
       }
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
-      // Remove from cookies
-      removeFromCookies('user');
-      removeFromCookies('token');
+      state.refreshToken = null;
+      state.forgotPassToken = null;
+      state.resetToken = null;
+      removeFromCookies("user");
+      removeFromCookies("token");
+      removeFromCookies("refreshToken");
+      removeFromCookies("forgotPassToken");
+      removeFromCookies("resetToken");
     },
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, setForgotPassToken, setResetToken, logout } = authSlice.actions;
 
 export default authSlice.reducer;
-// Selector to get the current user state
+
 export const selectCurrentUser = (state: RootState) => state.auth.user;
 export const selectToken = (state: RootState) => state.auth.token;
-
+export const selectForgotPassToken = (state: RootState) => state.auth.forgotPassToken;
+export const selectResetToken = (state: RootState) => state.auth.resetToken;

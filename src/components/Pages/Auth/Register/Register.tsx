@@ -13,8 +13,6 @@ import { MdEmail } from "react-icons/md";
 import { FaLock, FaUserCircle, FaCalendarAlt } from "react-icons/fa";
 import { GiPhone } from "react-icons/gi";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
-import { useAppDispatch } from "@/redux/hooks";
-import { setUser } from "@/redux/features/auth/authSlice";
 
 interface RegisterFormValues {
   firstName: string;
@@ -28,7 +26,6 @@ interface RegisterFormValues {
 
 const Register: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const [register, { isLoading }] = useRegisterMutation();
 
   // Initial page loading
@@ -56,7 +53,6 @@ const Register: React.FC = () => {
     try {
       const res = await register(registrationData).unwrap();
       if (res?.statusCode === 201) {
-        dispatch(setUser({ token: res.data.verificationToken}));
         router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
         Swal.fire({
           title: "Registration successful!",
@@ -92,21 +88,7 @@ const Register: React.FC = () => {
     }
   };
 
-  // ---------------------------------------
-  // Initial Page Loading
-  // ---------------------------------------
   if (pageLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  // ---------------------------------------
-  // Registration API Loading
-  // ---------------------------------------
-  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spin size="large" />
@@ -359,7 +341,7 @@ const Register: React.FC = () => {
               <span className="text-[#4A453D]">
                 I agree to the{" "}
                 <Link
-                  href="/terms"
+                  href="/terms-condition"
                   target="_blank"
                   className="text-[#C1892F] font-medium hover:underline"
                 >

@@ -1,12 +1,5 @@
+import ContactUs from "@/components/Pages/Contact/ContactUs";
 
-import React from 'react'
+const ContactUsPage = () => <ContactUs />;
 
-const ContactUsPage = () => {
-  return (
-    <section>
-        ContactUs
-    </section>
-  )
-}
-
-export default ContactUsPage
+export default ContactUsPage;

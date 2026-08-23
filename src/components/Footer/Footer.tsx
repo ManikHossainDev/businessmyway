@@ -26,9 +26,8 @@ const infoLinks = [
   { label: "Contact", href: "/contact-us" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Term-Condition", href: "/terms-condition" },
-  { label: "Refund Policy", href: "/refund-policy" },
-  { label: "Shipping Policy", href: "/shipping-policy" },
-  // { label: "Cookie Policy", href: "/cookie-policy" },
+  { label: "Refund Policy", href: "/refundpolicy" },
+  { label: "Shipping Policy", href: "/shippingpolicy" },
 ];
 
 const socialLinks = [

@@ -1,25 +1,27 @@
+"use client";
+
 import { baseApi } from "@/redux/api/baseApi";
 
 const Profile = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     GetProfile: builder.query({
       query: () => ({
-        url: "users/self/in",
+        url: "/users/me",
         method: "GET",
       }),
       providesTags: ["Profile"],
     }),
     UpdateProfile: builder.mutation({
-      query: (data) => ({
-        url: "users/self/update",
+      query: (data: FormData | Record<string, unknown>) => ({
+        url: "/users/me",
         method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["Profile"],
     }),
-    deleteProfile: builder.mutation({
-      query: (id) => ({
-        url: `/general-info/${id}`,
+    deleteProfile: builder.mutation<unknown, void>({
+      query: () => ({
+        url: `/users/me`,
         method: "DELETE",
       }),
     }),

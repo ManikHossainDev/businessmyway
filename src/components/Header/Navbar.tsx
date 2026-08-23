@@ -7,12 +7,13 @@ import Link from "next/link";
 import { Drawer, Button,  } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/redux/hooks";
-import { logout } from "@/redux/features/auth/authSlice";
-
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { logout, selectCurrentUser, selectToken } from "@/redux/features/auth/authSlice";
 import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiPhone } from "react-icons/fi";
 import { TfiHeadphoneAlt } from "react-icons/tfi";
 import CartDrawer from "../UI/CartDrawer";
+import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
+import { resolveMediaUrl } from "@/utils/media";
 
 
 
@@ -53,12 +54,12 @@ const initialCartItems= [
 const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-
-  const user = {
-    name: "John Doe",
-    avatar: "",
-    email: "john.doe@example.com",
-  };
+  const token = useAppSelector(selectToken);
+  const cookieUser = useAppSelector(selectCurrentUser);
+  const { data } = useGetProfileQuery(undefined, { skip: !token });
+  const profile = data?.data || cookieUser;
+  const isLoggedIn = Boolean(token);
+  const avatarSrc = resolveMediaUrl(profile?.avatar);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -132,12 +133,24 @@ const Navbar = () => {
               )}
             </button>
 
-            {user ? (
-                <Link href="/profile" aria-label="Account" className="cursor-pointer">
+            {isLoggedIn ? (
+              <Link href="/profile" aria-label="Account" className="cursor-pointer">
+                {avatarSrc ? (
+                  <span className="relative block h-7 w-7 xl:h-8 xl:w-8 overflow-hidden rounded-full">
+                    <Image
+                      src={avatarSrc}
+                      alt={profile?.name || "Profile"}
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  </span>
+                ) : (
                   <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-                </Link>
+                )}
+              </Link>
             ) : (
-              <Link href="/login">
+              <Link href="/login" aria-label="Login">
                 <FiUser className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
               </Link>
             )}
@@ -177,7 +190,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex flex-col gap-4 mt-4">
-            {user.name ? (
+            {isLoggedIn ? (
               <button
                 className="text-white bg-red-500 px-10 py-3 rounded"
                 onClick={() => {

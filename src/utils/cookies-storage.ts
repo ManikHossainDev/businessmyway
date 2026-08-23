@@ -2,10 +2,11 @@ import Cookies from 'js-cookie';
 
 // Cookie options for security
 const cookieOptions = {
-  httpOnly: false, // Set to true if you want to prevent client-side access
-  secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-  sameSite: 'strict' as const, // Prevent CSRF attacks
-  path: '/',
+  httpOnly: false,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict" as const,
+  path: "/",
+  expires: 7,
 };
 
 export const setToCookies = (key: string, value: string, options?: Cookies.CookieAttributes) => {

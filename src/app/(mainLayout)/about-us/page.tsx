@@ -1,10 +1,11 @@
+import PolicyPage from "@/components/Pages/Policy/PolicyPage";
 
-const AboutUsPage = () => {
-  return (
-    <section>
-       abut us
-    </section>
-  )
-}
+const AboutUsPage = () => (
+  <PolicyPage
+    slug="about_us"
+    href="/about-us"
+    fallbackTitle="About Us"
+  />
+);
 
-export default AboutUsPage
+export default AboutUsPage;

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Form, message } from "antd";
+import { Form, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
@@ -10,7 +11,7 @@ import { MdEmail } from "react-icons/md";
 import { useForgetPasswordMutation } from "@/redux/features/auth/authApi";
 import Swal from "sweetalert2";
 import { useAppDispatch } from "@/redux/hooks";
-import { setUser } from "@/redux/features/auth/authSlice";
+import { setForgotPassToken } from "@/redux/features/auth/authSlice";
 interface ForgotPasswordFormValues {
   email: string;
 }
@@ -18,6 +19,16 @@ const ForgotPassword: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const onFinish = async (values: ForgotPasswordFormValues) => {
     try {
       // ✅ Fix 1: Correctly pass email object
@@ -25,8 +36,8 @@ const ForgotPassword: React.FC = () => {
       console.log(res)
       // ✅ Fix 2: Check the correct status code property
       if (res?.statusCode === 200 ) {
+         dispatch(setForgotPassToken(res.data?.forgotPassToken));
          router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
-         dispatch(setUser({ token: res.data?.forgotPassToken }));
       }
     } catch (error: any) {
       console.error("Forgot password error:", error);
@@ -41,6 +52,14 @@ const ForgotPassword: React.FC = () => {
       });
     }
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <section className="relative w-[92%] sm:w-[90%] mx-auto min-h-screen rounded-md overflow-hidden flex items-center justify-center py-10 sm:py-16 px-3">

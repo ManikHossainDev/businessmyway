@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Form } from "antd";
+import { Form, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
@@ -16,6 +17,16 @@ interface ResetPasswordFormValues {
 const ResetPassword: React.FC = () => {
   const router = useRouter();
   const [resetPassword, { isLoading }] = useResitPasswordMutation();
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const onFinish = async (values: ResetPasswordFormValues) => {
     try {
       const res = await resetPassword({
@@ -44,6 +55,14 @@ const ResetPassword: React.FC = () => {
       });
     }
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <section className="relative w-[92%] sm:w-[90%] mx-auto min-h-screen rounded-md overflow-hidden flex items-center justify-center py-10 sm:py-16 px-3">

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Form, message } from "antd";
+import { Form, message, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
@@ -11,7 +12,6 @@ import { FaLock } from "react-icons/fa";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/features/auth/authSlice";
-import { LoadingSpinner } from "@/components/UI/LoadingSpinner";
 import Swal from "sweetalert2";
 
 interface LoginFormValues {
@@ -23,6 +23,15 @@ const Login: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const onFinish = async (values: LoginFormValues) => {
     const loginData = {
@@ -34,7 +43,11 @@ const Login: React.FC = () => {
       const res = await login(loginData).unwrap();
       console.log("Login Response: ", res);
       if(res?.statusCode === 200){
-        dispatch(setUser({ user: res.data.user, token: res.data.tokens?.accessToken }));
+        dispatch(setUser({
+          user: res.data.user,
+          token: res.data.tokens?.accessToken,
+          refreshToken: res.data.tokens?.refreshToken,
+        }));
         message.success("Logged in successfully");
         router.push("/");
       }
@@ -48,8 +61,12 @@ const Login: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
