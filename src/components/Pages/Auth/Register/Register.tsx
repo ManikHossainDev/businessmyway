@@ -37,7 +37,7 @@ const Register: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 200);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);

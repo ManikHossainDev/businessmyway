@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import { Form, message } from "antd";
+import { Form } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { MdOutlinePassword } from "react-icons/md";
-import { useVerifyEmailMutation } from "@/redux/features/auth/authApi";
+import { useForgetPasswordMutation, useVerifyEmailMutation } from "@/redux/features/auth/authApi";
 import { selectToken, setUser } from "@/redux/features/auth/authSlice";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useAppDispatch } from "@/redux/hooks";
+import { CloudCog } from "lucide-react";
 
 interface OTPFormValues {
   otp: string;
@@ -21,37 +22,33 @@ const VerifyEmail: React.FC = () => {
   const token = useSelector(selectToken);
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  // Get email from URL
+
   const email = searchParams.get("email");
   const [verifyEmail] = useVerifyEmailMutation();
-  
+  const [forgetPassword] = useForgetPasswordMutation();
+
   const onFinish = async (values: OTPFormValues) => {
-    // ✅ Fix 1: Properly structure the data object with commas
     const data = {
       forgotPassToken: token,
       email: email,
       otp: values?.otp,
     };
-
     try {
-      // ✅ Fix 1: Pass the data object to the mutation
       const res = await verifyEmail(data).unwrap();
-      console.log(res);
-      
-      // ✅ Fix 2: Check the correct status code property
-      if (res?.statusCode === 200 || res?.success === true) {
+      console.log("verifyEmail", res);
+
+      if (res?.statusCode === 200) {
         router.push("/reset-password");
         dispatch(setUser({ token: res.data?.accessToken }));
       }
     } catch (error: any) {
       console.error("Email verification error:", error);
-      
-      // ✅ Fix 3: Better error handling with proper fallback
+
       const errorMessage =
         error?.data?.message ||
         error?.message ||
         "Failed to verify email. Please try again.";
-      
+
       Swal.fire({
         title: "Error",
         text: errorMessage,
@@ -60,8 +57,31 @@ const VerifyEmail: React.FC = () => {
     }
   };
 
-  const handleResend = () => {
-    message.success("A new code has been sent to your email");
+  const handleResend = async () => {
+    try {
+      // ✅ getemail এর বদলে সরাসরি email ব্যবহার করা হচ্ছে
+      const res = await forgetPassword({ email }).unwrap();
+      console.log("forgetPassword", res);
+
+      if (res?.statusCode === 200) {
+        Swal.fire({
+          title: "Success",
+          text: "A new code has been sent to your email",
+          icon: "success",
+        });
+        dispatch(setUser({ token: res.data?.forgotPassToken }));
+      }
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+
+      const errorMessage = error?.data?.message || error?.message;
+
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
   };
 
   return (

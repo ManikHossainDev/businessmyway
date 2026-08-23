@@ -82,7 +82,7 @@ const AccountVerify: React.FC = () => {
         {/* Header */}
         <div className="mb-6 text-center sm:mb-7">
           <h1 className="mb-1.5 font-serif text-xl leading-tight text-[#1A1A1A] sm:text-2xl">
-            Verify <span className="text-[#C1752C]">Email</span>
+            Account <span className="text-[#C1752C]">Verify</span>
           </h1>
 
           <p className="text-sm text-[#8F887A] sm:text-xl">
@@ -146,7 +146,7 @@ const AccountVerify: React.FC = () => {
         </Form>
 
         {/* Resend OTP */}
-        <div className="mt-5 text-center">
+        {/* <div className="mt-5 text-center">
           <p className="text-sm text-[#8F887A] sm:text-base">
             Didn&apos;t receive the code?{" "}
             <button
@@ -158,6 +158,7 @@ const AccountVerify: React.FC = () => {
             </button>
           </p>
         </div>
+        */}
       </div>
     </section>
   );

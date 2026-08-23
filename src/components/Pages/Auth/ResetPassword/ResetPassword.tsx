@@ -1,23 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import { Form, message } from "antd";
+import { Form } from "antd";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
 import SVECTOR from "@/assets/Authentication/SVECTOR.png";
 import { FaLock } from "react-icons/fa";
 import { useResitPasswordMutation } from "@/redux/features/auth/authApi";
+import Swal from "sweetalert2";
 
 interface ResetPasswordFormValues {
   password: string;
   confirmPassword: string;
 }
-
 const ResetPassword: React.FC = () => {
   const router = useRouter();
-  const [ResitPassword] = useResitPasswordMutation()
-  const onFinish = (values: ResetPasswordFormValues) => {
-     
+  const [resetPassword, { isLoading }] = useResitPasswordMutation();
+  const onFinish = async (values: ResetPasswordFormValues) => {
+    try {
+      const res = await resetPassword({
+        newPassword: values.password,
+        confirmPassword: values.confirmPassword,
+      }).unwrap();
+
+      if (res?.statusCode === 200) {
+        Swal.fire({
+          title: "Success",
+          text: "Password reset successfully",
+          icon: "success",
+        });
+        router.push("/login");
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.errors?.[0]?.message ||
+        error?.data?.message ||
+        error?.message ||
+        "Failed to reset password.";
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -37,7 +62,7 @@ const ResetPassword: React.FC = () => {
           Reset <span className="text-[#C1752C]">password</span>
         </h1>
         <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
-          Your password must be 8-10 characters long.
+          Password must be at least 8 characters and include uppercase, lowercase, number, and special character.
         </p>
 
         <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
@@ -50,7 +75,12 @@ const ResetPassword: React.FC = () => {
             name="password"
             rules={[
               { required: true, message: "Please enter a new password" },
-              { min: 6, message: "Password must be at least 6 characters" },
+              { min: 8, message: "Password must be at least 8 characters" },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,72}$/,
+                message:
+                  "Password must include uppercase, lowercase, number, and special character",
+              },
             ]}
             hasFeedback
             className="mb-3.5"
@@ -74,7 +104,7 @@ const ResetPassword: React.FC = () => {
             dependencies={["password"]}
             rules={[
               { required: true, message: "Please confirm your new password" },
-              { min: 6, message: "Password must be at least 6 characters" },
+              { min: 8, message: "Password must be at least 8 characters" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
@@ -98,9 +128,10 @@ const ResetPassword: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
+            disabled={isLoading}
+            className="w-full py-2.5 sm:py-3 bg-[#C1892F] hover:bg-[#AD7A28] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-[3px] text-white text-sm sm:text-xl font-semibold tracking-[0.1em] sm:tracking-[0.15em] uppercase"
           >
-            Reset Password
+            {isLoading ? "Resetting..." : "Reset Password"}
           </button>
         </Form>
       </div>
