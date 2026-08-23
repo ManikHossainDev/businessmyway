@@ -11,6 +11,7 @@ export type TUser = {
   id: string;
   phone?: string;
   avatar?: string;
+  role?: string;
   createdAt?: string;
 };
 

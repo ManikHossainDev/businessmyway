@@ -6,7 +6,7 @@ import React from "react";
 
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AuthGuard>
+    <AuthGuard requireUser>
       <section className=" bg-[#FFFFFF]">
         <div className="xl:container pt-[79px] px-2 xl:px-0 mx-auto">
           <div className="pt-2">

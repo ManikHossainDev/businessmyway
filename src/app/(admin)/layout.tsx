@@ -1,28 +1,39 @@
-import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
-import Sidebar from "@/components/Sidebar/Sidebar";
-import AuthGuard from "@/components/Auth/AuthGuard";
-import React from "react";
+"use client";
 
-const Dashboard = ({ children }: { children: React.ReactNode }) => {
+import { useState } from "react";
+import AuthGuard from "@/components/Auth/AuthGuard";
+import AdminHeader from "@/components/Header/AdminHeader";
+import AdminSidebar from "@/components/Sidebar/Adminsidebar";
+
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <AuthGuard>
-      <section className=" bg-[#FFFFFF]">
-        <div className="xl:container pt-[79px] px-2 xl:px-0 mx-auto">
-          <div className="pt-2">
-            <Header />
-          </div>
-          <div className="grid grid-cols-12 px-3 md:px-0 lg:grid-cols-12 md:mt-5 md:grid-cols-11 md:py-8  md:space-x-32 lg:space-x-28 xl:space-x-14">
-            <div className="col-span-1 md:col-span-2 lg:col-span-2 md:mt-4">
-              <Sidebar />
-            </div>
-            <div className="col-span-11 md:col-span-9 lg:col-span-10">{children}</div>
-          </div>
+    <AuthGuard requireAdmin>
+      <div className="min-h-screen bg-[#F6F3EE] text-[#1A1A1A]">
+        <AdminSidebar
+          mobileOpen={mobileOpen}
+          collapsed={collapsed}
+          onClose={() => setMobileOpen(false)}
+          onToggleCollapse={() => setCollapsed((value) => !value)}
+        />
+
+        <div
+          className={`min-h-screen  bg-[#FFFFFF] flex flex-col transition-[padding] duration-300 ${
+            collapsed ? "lg:pl-20" : "lg:pl-64"
+          }`}
+        >
+          <AdminHeader
+            onMenuClick={() => setMobileOpen(true)}
+            collapsed={collapsed}
+            onToggleCollapse={() => setCollapsed((value) => !value)}
+          />
+          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
         </div>
-        <Footer />
-      </section>
+      </div>
     </AuthGuard>
   );
 };
 
-export default Dashboard;
+export default AdminLayout;
