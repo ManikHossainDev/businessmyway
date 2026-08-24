@@ -24,10 +24,26 @@ export type BrandPayload = {
   subtitles: string[];
 };
 
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
+export type BrandListParams = {
+  category?: string;
+  page?: number;
+  limit?: number;
+};
+
 type BrandListResponse = {
   success: boolean;
   message?: string;
   data: Brand[];
+  meta?: PaginationMeta;
 };
 
 type BrandResponse = {
@@ -38,15 +54,25 @@ type BrandResponse = {
 
 const brandApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBrands: builder.query<BrandListResponse, { category?: string } | void>({
+    getBrands: builder.query<BrandListResponse, BrandListParams | void>({
       query: (arg) => ({
         url: "/brands",
-        params: arg?.category ? { category: arg.category } : undefined,
+        params: {
+          ...(arg?.category ? { category: arg.category } : {}),
+          page: arg?.page ?? 1,
+          limit: arg?.limit ?? 12,
+        },
       }),
       providesTags: ["brand"],
     }),
-    getAdminBrands: builder.query<BrandListResponse, void>({
-      query: () => "/admin/brands",
+    getAdminBrands: builder.query<BrandListResponse, BrandListParams | void>({
+      query: (arg) => ({
+        url: "/admin/brands",
+        params: {
+          page: arg?.page ?? 1,
+          limit: arg?.limit ?? 9,
+        },
+      }),
       providesTags: ["brand"],
     }),
     createBrand: builder.mutation<BrandResponse, BrandPayload>({

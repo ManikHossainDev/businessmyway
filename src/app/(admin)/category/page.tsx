@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Form, Input, Modal, Spin } from "antd";
 import Swal from "sweetalert2";
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import {
   useCreateCategoryMutation,
   useGetAdminCategoriesQuery,
@@ -72,12 +72,14 @@ const CategoryPage = () => {
     }
   };
 
+
+
   return (
     <div className="w-full">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-        <h2 className="text-2xl font-semibold">Category</h2>
-        <p className="text-sm text-[#8A8174]">Manage your product categories</p>
+          <h2 className="text-2xl font-semibold">Category</h2>
+          <p className="text-sm text-[#8A8174]">Manage your product categories</p>
         </div>
         <button
           type="button"
@@ -88,36 +90,40 @@ const CategoryPage = () => {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-[#E8E0D4] bg-white">
-        {isLoading ? (
-          <div className="flex min-h-[200px] items-center justify-center">
-            <Spin />
-          </div>
-        ) : categories.length === 0 ? (
+      {isLoading ? (
+        <div className="flex min-h-[400px] items-center justify-center">
+          <Spin />
+        </div>
+      ) : categories.length === 0 ? (
+        <div className="rounded-2xl border border-[#E8E0D4] bg-white">
           <p className="px-5 py-10 text-center text-sm text-[#8A8174]">
             No categories yet. Add one to get started.
           </p>
-        ) : (
-          <ul>
-            {categories.map((category) => (
-              <li
-                key={category.id}
-                className="flex items-center justify-between gap-3 border-b border-[#F0EAE2] px-5 py-4 last:border-b-0"
-              >
-                <span className="text-sm font-medium text-[#1A1A1A]">{category.name}</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="flex flex-col justify-between "
+            >
+              <div className="flex items-center justify-between rounded-lg border border-[#E8E0D4] bg-white p-2 shadow-sm transition-shadow hover:shadow-md">
+                <p className="line-clamp-2 text-sm font-medium text-[#1A1A1A]">
+                    {category.name}
+                </p>
                 <button
-                  type="button"
-                  onClick={() => openEditModal(category)}
-                  className="inline-flex items-center gap-1.5 rounded-[3px] border border-[#E8E0D4] px-3 py-1.5 text-xs font-medium text-[#5C564C] hover:bg-[#F6F3EE]"
+                    type="button"
+                    onClick={() => openEditModal(category)}
+                    aria-label={`Edit ${category.name}`}
+                    className="flex items-center gap-1 rounded px-2 py-1 text-[#1A1A1A] hover:bg-gray-100 transition-colors"
                 >
-                  <FiEdit2 size={14} />
-                  Edit
+                    <FiEdit2 size={14} />
                 </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <Modal
         open={modalOpen}

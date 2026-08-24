@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Form, Input, Modal, Select, Spin } from "antd";
+import { ConfigProvider, Form, Input, Modal, Pagination, Select, Spin } from "antd";
 import Swal from "sweetalert2";
 import { FiEdit2, FiMinus, FiPlus } from "react-icons/fi";
 import { useGetAdminCategoriesQuery } from "@/redux/features/category/categoryApi";
@@ -19,19 +19,25 @@ type BrandFormValues = {
   subtitles: string[];
 };
 
+const PAGE_SIZE = 9;
+
 const BrandsPage = () => {
   const [form] = Form.useForm<BrandFormValues>();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
-  const { data, isLoading } = useGetAdminBrandsQuery();
-  const { data: categoryData, isLoading: isCategoriesLoading } =
-    useGetAdminCategoriesQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading, isFetching } = useGetAdminBrandsQuery({
+    page: currentPage,
+    limit: PAGE_SIZE,
+  });
+  const { data: categoryData, isLoading: isCategoriesLoading } = useGetAdminCategoriesQuery();
   const [createBrand, { isLoading: isCreating }] = useCreateBrandMutation();
   const [updateBrand, { isLoading: isUpdating }] = useUpdateBrandMutation();
   const brands = data?.data || [];
   const categories = categoryData?.data || [];
+  const total = data?.meta?.total ?? 0;
   const isSaving = isCreating || isUpdating;
-
+  
   const openAddModal = () => {
     setEditingBrand(null);
     form.resetFields();
@@ -79,6 +85,7 @@ const BrandsPage = () => {
         await updateBrand({ id: editingBrand.id, ...payload }).unwrap();
       } else {
         await createBrand(payload).unwrap();
+        setCurrentPage(1);
       }
       closeModal();
       Swal.fire({
@@ -116,7 +123,7 @@ const BrandsPage = () => {
         </button>
       </div>
 
-      {isLoading ? (
+      {isLoading || isFetching ? (
         <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-[#E8E0D4] bg-white">
           <Spin />
         </div>
@@ -125,6 +132,7 @@ const BrandsPage = () => {
           No brands yet. Add one to get started.
         </p>
       ) : (
+        <>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {brands.map((brand) => (
             <article
@@ -163,6 +171,20 @@ const BrandsPage = () => {
             </article>
           ))}
         </div>
+        {total > 0 && (
+          <div className="mt-6 flex justify-center">
+            <ConfigProvider theme={{ token: { colorPrimary: "#C1892F" } }}>
+              <Pagination
+                current={currentPage}
+                pageSize={PAGE_SIZE}
+                total={total}
+                onChange={setCurrentPage}
+                showSizeChanger={false}
+              />
+            </ConfigProvider>
+          </div>
+        )}
+        </>
       )}
 
       <Modal

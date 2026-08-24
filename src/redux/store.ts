@@ -6,6 +6,8 @@ import "./features/Profile/Profile";
 import "./features/settings/settingsApi";
 import "./features/category/categoryApi";
 import "./features/brands/brandApi";
+import "./features/subscribers/subscriberApi";
+import "./features/user/userApi";
 
 export const store = configureStore({
   reducer: {

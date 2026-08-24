@@ -1,3 +1,5 @@
+"use client";
+
 const AdminDashboardPage = () => {
   return (
     <div className="space-y-6">

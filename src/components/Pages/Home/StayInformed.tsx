@@ -1,31 +1,60 @@
 "use client";
+
 import Link from "next/link";
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import Swal from "sweetalert2";
+import { useSubscribeNewsletterMutation } from "@/redux/features/subscribers/subscriberApi";
 
 const StayInformed = () => {
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [subscribe, { isLoading }] = useSubscribeNewsletterMutation();
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !agreed) return;
-    // TODO: wire up to your subscribe endpoint
-    console.log("Subscribe:", email);
+    if (!email.trim()) return;
+    if (!agreed) {
+      Swal.fire({
+        title: "Agreement required",
+        text: "Please accept the Privacy Policy to subscribe.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    try {
+      await subscribe({ email: email.trim(), agreed: true }).unwrap();
+      setEmail("");
+      setAgreed(false);
+      Swal.fire({
+        title: "Subscribed",
+        text: "You are now on the Inner Circle list.",
+        icon: "success",
+      });
+    } catch (error: unknown) {
+      const message =
+        (error as { data?: { message?: string } })?.data?.message ||
+        "Failed to subscribe. Please try again.";
+      Swal.fire({
+        title: "Error",
+        text: message,
+        icon: "error",
+      });
+    }
   };
 
   return (
     <section className="px-2 lg:px-6 py-10 md:py-16 xl:py-24">
-      <div className="xl:container mx-auto grid  grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
-        {/* Left: copy */}
+      <div className="xl:container mx-auto grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
         <div>
           <div className="flex items-center gap-3">
             <span className="h-[4px] w-8 bg-[#BF8D2F]" />
-            <span className="font-[Jost]  text-[20px] leading-none tracking-normal text-neutral-700">
+            <span className="font-[Jost] text-[20px] leading-none tracking-normal text-neutral-700">
               Stay Informed
             </span>
           </div>
 
-          <h2 className="mt-3 md:font-corvinus font-medium text xl:text-[60px]  tracking-normal text-neutral-900">
+          <h2 className="mt-3 md:font-corvinus font-medium xl:text-[60px] tracking-normal text-neutral-900">
             Join the <span className="text-[#BF8D2F] md:font-corvinus font-medium">Inner Circle</span>
           </h2>
 
@@ -36,7 +65,6 @@ const StayInformed = () => {
           </p>
         </div>
 
-        {/* Right: form */}
         <div>
           <form onSubmit={handleSubmit} className="flex gap-3">
             <input
@@ -51,10 +79,11 @@ const StayInformed = () => {
             />
             <button
               type="submit"
+              disabled={!agreed || isLoading}
               className="shrink-0 rounded-sm bg-[#BF8D2F] px-6 py-3 font-[Jost] text-sm font-semibold text-white
-                         transition-colors hover:bg-[#a67809]"
+                         transition-colors hover:bg-[#a67809] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Subscribe
+              {isLoading ? "Saving..." : "Subscribe"}
             </button>
           </form>
 

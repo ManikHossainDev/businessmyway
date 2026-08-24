@@ -5,7 +5,7 @@ import { Spin } from "antd";
 import { useGetBrandsQuery } from "@/redux/features/brands/brandApi";
 
 const OurBrands = () => {
-  const { data, isLoading } = useGetBrandsQuery();
+  const { data, isLoading } = useGetBrandsQuery({ page: 1, limit: 100 });
   const brands = data?.data || [];
 
   return (
