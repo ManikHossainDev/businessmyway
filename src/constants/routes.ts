@@ -5,6 +5,7 @@ export const ADMIN_ROUTES = [
   "/orders",
   "/inventory",
   "/category",
+  "/admin-brands",
   "/admin-about-us",
   "/admin-contact-us",
   "/admin-privacy-policy",
