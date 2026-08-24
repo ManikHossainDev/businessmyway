@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Modal } from "antd";
-import { FiBox, FiHome, FiLogOut, FiSettings, FiShoppingBag, FiUser } from "react-icons/fi";
+import { FiBox, FiHome, FiLayers, FiLogOut, FiSettings, FiShoppingBag, FiUser } from "react-icons/fi";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 import logo from "@/assets/logo/logo.png";
@@ -20,8 +20,8 @@ type AdminSidebarProps = {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: FiHome, href: "/admin-dashboard" },
-  { id: "profile", label: "Profile", icon: FiUser, href: "/adminProfile" },
   { id: "orders", label: "Orders", icon: FiShoppingBag, href: "/orders" },
+  { id: "category", label: "Category", icon: FiLayers, href: "/category" },
   { id: "inventory", label: "Inventory", icon: FiBox, href: "/inventory" },
   { id: "settings", label: "Settings", icon: FiSettings, href: "/settings" },
 ];

@@ -4,6 +4,7 @@ import { baseApi } from "./api/baseApi";
 import "./features/auth/authApi";
 import "./features/Profile/Profile";
 import "./features/settings/settingsApi";
+import "./features/category/categoryApi";
 
 export const store = configureStore({
   reducer: {

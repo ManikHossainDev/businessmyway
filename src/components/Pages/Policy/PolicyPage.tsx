@@ -72,7 +72,7 @@ const PolicyPage = ({ slug, fallbackTitle }: PolicyPageProps) => {
                 ) : null}
               </h1>
               <div
-                className="text-base leading-relaxed text-gray-700 space-y-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_p]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3"
+                className="policy-html text-base leading-relaxed text-gray-700 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_p]:mb-3 [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_a]:text-[#C1892F] [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-[#E8E0D4] [&_blockquote]:pl-4 [&_blockquote]:italic [&_img]:max-w-full [&_img]:h-auto [&_.ql-align-center]:text-center [&_.ql-align-right]:text-right [&_.ql-align-justify]:text-justify"
                 dangerouslySetInnerHTML={{ __html: setting.content || "" }}
               />
               {(emails?.length || phones?.length || address) ? (

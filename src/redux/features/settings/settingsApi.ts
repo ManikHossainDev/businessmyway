@@ -76,6 +76,7 @@ const settingsApi = baseApi.injectEndpoints({
     getPublicSetting: builder.query<PublicSettingResponse, SettingSlug>({
       query: (slug) => `/settings/public/${slug}`,
       providesTags: (_result, _error, slug) => [{ type: "settings", id: slug }],
+      keepUnusedDataFor: 0,
     }),
     submitContact: builder.mutation<ContactResponse, ContactFormBody>({
       query: (body) => ({
@@ -87,6 +88,7 @@ const settingsApi = baseApi.injectEndpoints({
     getAdminSetting: builder.query<AdminSettingResponse, SettingSlug>({
       query: (slug) => `/admin/settings/${slug}`,
       providesTags: (_result, _error, slug) => [{ type: "settings", id: slug }],
+      keepUnusedDataFor: 0,
     }),
     updateAdminSetting: builder.mutation<
       AdminSettingResponse,

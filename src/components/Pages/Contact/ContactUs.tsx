@@ -20,12 +20,9 @@ const ContactUs = () => {
   const { data } = useGetPublicSettingQuery("about_us");
   const [submitContact, { isLoading }] = useSubmitContactMutation();
 
-  const metadata = data?.data?.metadata;
+  const setting = data?.data;
+  const metadata = setting?.metadata;
   const emails = metadata?.emails
-    ?.split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const phones = metadata?.phones
     ?.split(",")
     .map((item) => item.trim())
     .filter(Boolean);
@@ -56,19 +53,23 @@ const ContactUs = () => {
     <div className="xl:container py-10 xl:pt-20">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:mb-20 ">
         <div>
-          <h1 className="text-3xl font-semibold mb-4">Contact Us</h1>
-          <p className="text-gray-600 mb-8">
-            Send us a message and we will reply as soon as we can.
-          </p>
+          <h1 className="text-3xl font-semibold mb-4">
+            {setting?.title || "Contact Us"}
+          </h1>
+          {setting?.content ? (
+            <div
+              className="policy-html mb-8 text-gray-700 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_p]:mb-3 [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_a]:text-[#C1892F] [&_a]:underline"
+              dangerouslySetInnerHTML={{ __html: setting.content }}
+            />
+          ) : (
+            <p className="text-gray-600 mb-8">
+              Send us a message and we will reply as soon as we can.
+            </p>
+          )}
           <div className="space-y-3 text-gray-700">
             {emails?.map((email) => (
               <p key={email}>
                 <span className="font-semibold">Email:</span> {email}
-              </p>
-            ))}
-            {phones?.map((phone) => (
-              <p key={phone}>
-                <span className="font-semibold">Phone:</span> {phone}
               </p>
             ))}
             {address ? (

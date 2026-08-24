@@ -16,6 +16,7 @@ export const baseApi = createApi({
     "RestorationApplication",
     "User",
     "settings",
+    "category",
   ],
   endpoints: () => ({}),
 });
