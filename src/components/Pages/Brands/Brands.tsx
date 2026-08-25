@@ -12,7 +12,8 @@ const PAGE_SIZE = 12;
 const Brands = () => {
   const [activeCategory, setActiveCategory] = useState(ALL_BRANDS);
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: categoryData, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
+  const { data: categoryData, isLoading: isCategoriesLoading } =
+    useGetCategoriesQuery();
   const { data: brandData, isFetching: isBrandsLoading } = useGetBrandsQuery({
     ...(activeCategory === ALL_BRANDS ? {} : { category: activeCategory }),
     page: currentPage,
@@ -24,7 +25,7 @@ const Brands = () => {
   const total = brandData?.meta?.total ?? 0;
   const tabs = useMemo(
     () => [ALL_BRANDS, ...categories.map((category) => category.name)],
-    [categories],
+    [categories]
   );
 
   const handleCategoryChange = (category: string) => {
@@ -66,18 +67,26 @@ const Brands = () => {
           No brands found in this category.
         </p>
       ) : (
-        <div className="rounded-md bg-white">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-md bg-white p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {brands.map((brand) => (
               <GifRevealWrapperCard borderSize={4} key={brand.id}>
-                <div className="text-center px-6 py-8 border bg-white">
-                  <h3 className="text-xl font-serif text-gray-900 mb-2">{brand.title}</h3>
+                <div className="text-center px-4 py-4 border bg-white">
+                  <h3 className="text-xl font-serif text-gray-900 mb-2">
+                    {brand.title}
+                  </h3>
+
                   {brand.subtitles.length > 0 && (
                     <p className="text-amber-600 text-sm mb-3">
                       {brand.subtitles.join(' / ')}
                     </p>
                   )}
-                  <p className="text-gray-500 text-sm leading-relaxed">{brand.description}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {brand.description}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    ({brand.productCount} products)
+                  </p>
                 </div>
               </GifRevealWrapperCard>
             ))}

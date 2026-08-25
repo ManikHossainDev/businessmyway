@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import Image from 'next/image';
-import { Heart } from 'lucide-react';
 import GifRevealWrapperCard from '@/components/UI/GifRevealWrapperCard';
 import GifRevealWrapper from '@/components/UI/GifRevealWrapper';
+import ProductPhoto from '@/components/UI/ProductPhoto';
+import WishlistHeartButton from '@/components/UI/WishlistHeartButton';
+import AddToCartButton from '@/components/UI/AddToCartButton';
 
 const CigarsCard = ({ product }: { product: any }) => {
   return (
@@ -11,9 +12,7 @@ const CigarsCard = ({ product }: { product: any }) => {
       <article className="group/card flex flex-col w-full h-full border border-gray-200">
         {/* Image */}
         <div className="aspect-square w-full bg-white overflow-hidden p-3 md:p-4">
-          <Image
-            width={200}
-            height={200}
+          <ProductPhoto
             src={product.image}
             alt={product.name}
             className="h-full w-full object-contain transition-transform duration-300 group-hover/card:scale-[1.03]"
@@ -26,7 +25,7 @@ const CigarsCard = ({ product }: { product: any }) => {
             {product.name}
           </h4>
           <p className="text-gray-500 text-sm mb-2">
-            {product.packSize.replace('Pack', 'piece/pack')}
+            {product.subtitle || product.packSize || ''}
           </p>
 
           {/* Price <-> Actions swap on hover, fixed-height wrapper so no layout jump */}
@@ -39,7 +38,7 @@ const CigarsCard = ({ product }: { product: any }) => {
                          group-hover/card:opacity-0 group-hover/card:-translate-y-2
                          pointer-events-none"
             >
-              £{product.price.toFixed(2)}
+              £{Number(product.price).toFixed(2)}
             </p>
 
             {/* Hover: Explore Collection + wishlist, slides up from below */}
@@ -51,24 +50,9 @@ const CigarsCard = ({ product }: { product: any }) => {
                          pointer-events-none group-hover/card:pointer-events-auto"
             >
               <GifRevealWrapper borderSize={4} className="flex-1">
-                <button
-                  type="button"
-                  className="w-full h-full rounded-sm bg-[#BF8D2F] px-3 py-3 text-xs md:text-sm font-semibold
-                            text-white transition-colors hover:bg-[#a67809]
-                            flex items-center justify-center"
-                >
-                  <span>Add to Cart</span>
-                </button>
+                <AddToCartButton productId={product.id} />
               </GifRevealWrapper>
-              <button
-                type="button"
-                aria-label="Add to wishlist"
-                className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-sm
-                           border border-gray-300 text-gray-700 transition-colors
-                           hover:border-gray-900 hover:text-gray-900"
-              >
-                <Heart size={18} strokeWidth={1.75} />
-              </button>
+              <WishlistHeartButton productId={product.id} />
             </div>
           </div>
         </div>

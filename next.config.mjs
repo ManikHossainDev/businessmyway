@@ -1,19 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-      },
+      { protocol: "https", hostname: "placehold.co", pathname: "/**" },
+      { protocol: "https", hostname: "dummyimage.com", pathname: "/**" },
+      { protocol: "https", hostname: "i.ibb.co", pathname: "/**" },
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+      { protocol: "http", hostname: "localhost", port: "5000", pathname: "/**" },
+      { protocol: "http", hostname: "127.0.0.1", port: "5000", pathname: "/**" },
     ],
   },
 };

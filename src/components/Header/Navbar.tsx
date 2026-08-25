@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "@/assets/logo/logo.png";
 import Image from "next/image";
 import ActiveLink from "./ActiveLink"; // Assuming this component works fine
@@ -13,9 +13,9 @@ import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiPhone } from "react-icons/f
 import { TfiHeadphoneAlt } from "react-icons/tfi";
 import CartDrawer from "../UI/CartDrawer";
 import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
+import { useGetWishlistIdsQuery } from "@/redux/features/wishlist/wishlistApi";
+import { useGetCartQuery, useUpdateCartQtyMutation } from "@/redux/features/cart/cartApi";
 import { resolveMediaUrl } from "@/utils/media";
-
-
 
 const navLink = [
   { href: "/cigarettes", label: "Cigarettes" },
@@ -26,57 +26,49 @@ const navLink = [
   { href: "/newarrivals", label: "New Arrivals" },
 ];
 
-// Replace with your real cart data / API call
-const initialCartItems= [
-  {
-    id: 1,
-    image: "/images/zino-cigar.png",
-    title: "Zino Honduras Robusto Cigars - Bof of 25",
-    price: 456.0,
-    qty: 1,
-  },
-  {
-    id: 2,
-    image: "/images/zino-cigar.png",
-    title: "Zino Honduras Robusto Cigars - Bof of 25",
-    price: 456.0,
-    qty: 1,
-  },
-  {
-    id: 3,
-    image: "/images/zino-cigar.png",
-    title: "Zino Honduras Robusto Cigars - Bof of 25",
-    price: 456.0,
-    qty: 1,
-  },
-];
-
 const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
   const cookieUser = useAppSelector(selectCurrentUser);
   const { data } = useGetProfileQuery(undefined, { skip: !token });
+  const { data: wishlistIdsData } = useGetWishlistIdsQuery(undefined, { skip: !token });
+  const { data: cartData } = useGetCartQuery(undefined, { skip: !token });
+  const [updateCartQty] = useUpdateCartQtyMutation();
   const profile = data?.data || cookieUser;
-  const isLoggedIn = Boolean(token);
-  const avatarSrc = resolveMediaUrl(profile?.avatar);
+  const wishlistCount = token ? wishlistIdsData?.data?.length ?? 0 : 0;
+  const cartItems = (cartData?.data || []).map((item) => ({
+    ...item,
+    image: resolveMediaUrl(item.image) || "",
+  }));
+  const cartCount = cartItems.length;
+  // js-cookie is empty on the server, so wait until mount before Login vs Profile.
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    setAuthReady(true);
+  }, []);
+  const isLoggedIn = authReady && Boolean(token);
+  const avatarSrc = isLoggedIn ? resolveMediaUrl(profile?.avatar) : null;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState(initialCartItems);
 
   const showDrawer = () => setIsDrawerOpen(true);
   const closeDrawer = () => setIsDrawerOpen(false);
 
-  const showCart = () => setIsCartOpen(true);
+  const showCart = () => {
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    setIsCartOpen(true);
+  };
   const closeCart = () => setIsCartOpen(false);
 
-  const updateQty = (id: number, delta: number) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
-      )
-    );
+  const updateQty = async (id: string, delta: number) => {
+    const item = cartItems.find((entry) => entry.id === id);
+    if (!item) return;
+    await updateCartQty({ productId: id, qty: item.qty + delta });
   };
 
   return (
@@ -121,14 +113,19 @@ const Navbar = () => {
             <Link href="/searchresult" aria-label="Search">
               <FiSearch className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </Link>
-            <Link href="/wishlist" aria-label="Wishlist">
+            <Link href="/mywishlist" aria-label="Wishlist" className="relative">
               <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {wishlistCount > 9 ? "9+" : wishlistCount}
+                </span>
+              )}
             </Link>
             <button aria-label="Bag" onClick={showCart} className="relative">
               <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-              {cartItems.length > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                  {cartItems.length}
+                  {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
             </button>
@@ -136,12 +133,12 @@ const Navbar = () => {
             {isLoggedIn ? (
               <Link href="/profile" aria-label="Account" className="cursor-pointer">
                 {avatarSrc ? (
-                  <span className="relative block h-7 w-7 xl:h-8 xl:w-8 overflow-hidden rounded-full">
+                  <span className="relative block h-9 w-9 overflow-hidden rounded-full border border-gray-300 xl:h-11 xl:w-11">
                     <Image
                       src={avatarSrc}
                       alt={profile?.name || "Profile"}
                       fill
-                      sizes="32px"
+                      sizes="44px"
                       className="object-cover"
                     />
                   </span>

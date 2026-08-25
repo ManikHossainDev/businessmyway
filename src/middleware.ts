@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import {
   ADMIN_ROUTES,
   AUTH_ROUTES,
+  SHARED_PRIVATE_ROUTES,
   USER_PRIVATE_ROUTES,
   isPathMatch,
 } from "@/constants/routes";
@@ -33,6 +34,7 @@ export function middleware(request: NextRequest) {
 
   const isAdminRoute = isPathMatch(pathname, ADMIN_ROUTES);
   const isUserRoute = isPathMatch(pathname, USER_PRIVATE_ROUTES);
+  const isSharedPrivateRoute = isPathMatch(pathname, SHARED_PRIVATE_ROUTES);
   const isAuthRoute = isPathMatch(pathname, AUTH_ROUTES);
 
   if (isAdminRoute) {
@@ -41,6 +43,13 @@ export function middleware(request: NextRequest) {
     }
     if (!isAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (isSharedPrivateRoute) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
   }

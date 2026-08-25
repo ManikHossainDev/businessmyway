@@ -1,119 +1,131 @@
-'use client';
-import { useMemo, useState } from 'react';
-import { Product } from '@/types/types';
-import Pagination from '@/components/UI/Pagination';
-import NewArrivalsCard from './NewArrivalsCard';
+"use client";
 
-export const products: Product[] = [
-  { id: 1, name: 'Davidoff Classic', brand: 'Davidoff', strength: 'Medium', flavour: 'Classic', packSize: '20 Pack', price: 12.5, image: 'https://i.ibb.co/HT5WKhpP/fire.png' },
-  { id: 2, name: 'Davidoff Gold', brand: 'Davidoff', strength: 'Light', flavour: 'Classic', packSize: '10 Pack', price: 7.0, image: 'https://i.ibb.co/ymXj1gFw/kachh.png' },
-  { id: 3, name: 'Davidoff Menthol', brand: 'Davidoff', strength: 'Light', flavour: 'Menthol', packSize: '20 Pack', price: 13.0, image: 'https://i.ibb.co/HT5WKhpP/fire.png' },
-  { id: 4, name: 'Marlboro Red', brand: 'Marlboro', strength: 'Full Strength', flavour: 'Classic', packSize: '20 Pack', price: 11.5, image: 'https://i.ibb.co/ymXj1gFw/kachh.png' },
-  { id: 5, name: 'Marlboro Gold', brand: 'Marlboro', strength: 'Light', flavour: 'Classic', packSize: '20 Pack', price: 11.5, image: 'https://i.ibb.co/HT5WKhpP/fire.png' },
-  { id: 6, name: 'Marlboro Ice Blast', brand: 'Marlboro', strength: 'Medium', flavour: 'Menthol', packSize: '10 Pack', price: 6.5, image: 'https://i.ibb.co/ymXj1gFw/kachh.png' },
-  { id: 7, name: 'Dunhill Fine Cut', brand: 'Dunhill', strength: 'Ultra Light', flavour: 'Classic', packSize: '20 Pack', price: 12.0, image: 'https://i.ibb.co/HT5WKhpP/fire.png' },
-  { id: 8, name: 'Dunhill Menthol', brand: 'Dunhill', strength: 'Medium', flavour: 'Menthol', packSize: 'Carton x 10', price: 95.0, image: 'https://i.ibb.co/ymXj1gFw/kachh.png' },
-  { id: 9, name: 'Dunhill Vanilla Mix', brand: 'Dunhill', strength: 'Light', flavour: 'Vanilla', packSize: '20 Pack', price: 12.5, image: 'https://i.ibb.co/HT5WKhpP/fire.png' },
-  { id: 10, name: 'Davidoff Carton', brand: 'Davidoff', strength: 'Full Strength', flavour: 'Classic', packSize: 'Carton x 10', price: 98.0, image: 'https://i.ibb.co/ymXj1gFw/kachh.png' },
-];
+import { useMemo, useState } from "react";
+import { Spin } from "antd";
+import { useGetProductsQuery, type Product } from "@/redux/features/products/productApi";
+import { resolveMediaUrl } from "@/utils/media";
+import Pagination from "@/components/UI/Pagination";
+import NewArrivalsCard from "./NewArrivalsCard";
 
-
-const sortOptions = ['Best Selling', 'Price: Low to High', 'Price: High to Low', 'Newest'] as const;
-type SortOption = (typeof sortOptions)[number];
-
+const NEW_ARRIVALS_LIMIT = 12;
 const PRODUCTS_PER_PAGE = 8;
 
+const sortOptions = [
+  { label: "Newest", value: "newest" },
+  { label: "Price: Low to High", value: "priceAsc" },
+  { label: "Price: High to Low", value: "priceDesc" },
+] as const;
+
+type SortValue = (typeof sortOptions)[number]["value"];
+
 const NewArrivals = () => {
-  const [sortBy, setSortBy] = useState<SortOption>('Best Selling');
+  const [sortBy, setSortBy] = useState<SortValue>("newest");
   const [sortOpen, setSortOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
+  const { data, isFetching } = useGetProductsQuery({
+    featured: false,
+    sort: "newest",
+    page: 1,
+    limit: NEW_ARRIVALS_LIMIT,
+  });
 
-    if (sortBy === 'Price: Low to High') result = result.sort((a, b) => a.price - b.price);
-    if (sortBy === 'Price: High to Low') result = result.sort((a, b) => b.price - a.price);
-    if (sortBy === 'Newest') result = result.sort((a, b) => b.id - a.id);
+  const latestProducts = useMemo(
+    () =>
+      (data?.data || []).map((product) => ({
+        ...product,
+        image: resolveMediaUrl(product.image) || "",
+      })),
+    [data?.data],
+  );
 
+  const products = useMemo(() => {
+    const result = [...latestProducts];
+    if (sortBy === "priceAsc") {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "priceDesc") {
+      result.sort((a, b) => b.price - a.price);
+    } else {
+      result.sort(
+        (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
+      );
+    }
     return result;
-  }, [sortBy]);
+  }, [latestProducts, sortBy]);
 
   const total = products.length;
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(total / PRODUCTS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
-
-  const paginatedProducts = useMemo(() => {
-    const start = (safePage - 1) * PRODUCTS_PER_PAGE;
-    return filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
-  }, [filteredProducts, safePage]);
+  const paginatedProducts = products.slice(
+    (safePage - 1) * PRODUCTS_PER_PAGE,
+    safePage * PRODUCTS_PER_PAGE,
+  );
 
   return (
     <div className="xl:container mx-auto px-2 xl:px-0 py-6">
-      <div className="">
-        <div className="flex-1">
-          {/* Header bar */}
-          <div className="flex items-center justify-between mb-2">
-            <div>
-                <h2 className=" text-sm md:text-base">
-              Home/New Arrivals
-            </h2>
-            <div className="flex items-center gap-2 text-gray-500 text-sm">
-              <span className="w-4 h-[4px] bg-[#BF8D2F]" />
-              Showing {filteredProducts.length} of {total} new products this week
-            </div>
-            </div>
-
-            <div className="relative z-30">
-              <button
-                onClick={() => setSortOpen((o) => !o)}
-                className="flex items-center gap-2 border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                {sortBy}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              {sortOpen && (
-                <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48">
-                  {sortOptions.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => {
-                        setSortBy(opt);
-                        setSortOpen(false);
-                        setCurrentPage(1);
-                      }}
-                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                        opt === sortBy ? 'text-amber-700 font-medium' : 'text-gray-700'
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h2 className="text-sm md:text-base">Home / New Arrivals</h2>
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
+            <span className="w-4 h-[4px] bg-[#BF8D2F]" />
+            Showing {paginatedProducts.length} of {total} latest products
           </div>
+        </div>
 
-          {/* Product grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-px border-[1px] border-gray-200">
-            {paginatedProducts.length > 0 ? (
-              paginatedProducts.map((product) => (
-                <div key={product.id} className="bg-white">
-                  <NewArrivalsCard product={product} />
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 col-span-full p-8 text-center bg-white">
-                No products found matching the selected filters.
-              </p>
-            )}
-          </div>
-
-          {/* Pagination */}
-          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        <div className="relative z-30">
+          <button
+            type="button"
+            onClick={() => setSortOpen((open) => !open)}
+            className="flex items-center gap-2 border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {sortOptions.find((option) => option.value === sortBy)?.label}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          {sortOpen && (
+            <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48">
+              {sortOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setSortBy(option.value);
+                    setSortOpen(false);
+                    setCurrentPage(1);
+                  }}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                    option.value === sortBy ? "text-amber-700 font-medium" : "text-gray-700"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+
+      {isFetching ? (
+        <div className="flex min-h-[240px] items-center justify-center border border-gray-200 bg-white">
+          <Spin />
+        </div>
+      ) : products.length === 0 ? (
+        <p className="border border-gray-200 bg-white px-6 py-16 text-center text-sm text-gray-500">
+          No new products yet. Newly created products will appear here.
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-px border border-gray-200">
+            {paginatedProducts.map((product: Product) => (
+              <div key={product.id} className="bg-white">
+                <NewArrivalsCard product={product} />
+              </div>
+            ))}
+          </div>
+          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        </>
+      )}
     </div>
   );
 };

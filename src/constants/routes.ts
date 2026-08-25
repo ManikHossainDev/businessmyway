@@ -22,8 +22,9 @@ export const USER_PRIVATE_ROUTES = [
   "/orderhistory",
   "/addresses",
   "/changepass",
-  "/wishlist",
 ];
+
+export const SHARED_PRIVATE_ROUTES = ["/wishlist", "/mywishlist"];
 
 export const AUTH_ROUTES = [
   "/login",

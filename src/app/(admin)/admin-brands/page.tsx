@@ -142,9 +142,19 @@ const BrandsPage = () => {
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
                   <h3 className="mt-1 text-lg font-semibold text-[#1A1A1A]">
-                    {brand.title} 
+                    {brand.title}
                   </h3>
-                  <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#C1892F]">{brand.category?.name || "Uncategorized"}</p>
+                  
+                  <div className="flex flex-wrap gap-2">
+                {brand.subtitles.map((subtitle, index) => (
+                  <span
+                    key={`${brand.id}-${index}`}
+                    className="rounded-full bg-[#F6F3EE] px-3 py-1 text-xs font-medium text-[#5C564C]"
+                  >
+                    {subtitle}
+                  </span>
+                ))}
+                </div>
                 </div>
                 <button
                   type="button"
@@ -158,15 +168,13 @@ const BrandsPage = () => {
               <p className="mb-4 text-sm leading-relaxed text-[#5C564C]">
                 {brand.description}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {brand.subtitles.map((subtitle, index) => (
-                  <span
-                    key={`${brand.id}-${index}`}
-                    className="rounded-full bg-[#F6F3EE] px-3 py-1 text-xs font-medium text-[#5C564C]"
-                  >
-                    {subtitle}
-                  </span>
-                ))}
+              <div className="flex  justify-between">
+              <p className="text-sm text-[#8A8174]">
+              Category: {brand.category?.name || "Uncategorized"}
+                  </p>
+                <p className="text-sm text-[#8A8174]">
+                    {brand.productCount ?? 0} {(brand.productCount ?? 0) === 1 ? "product" : "products"}
+                  </p>
               </div>
             </article>
           ))}

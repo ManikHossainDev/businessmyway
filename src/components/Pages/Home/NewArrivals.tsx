@@ -1,33 +1,44 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import GifRevealWrapperCard from "@/components/UI/GifRevealWrapperCard";
-import Image from "next/image";
 import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+import ProductPhoto from "@/components/UI/ProductPhoto";
+import WishlistHeartButton from "@/components/UI/WishlistHeartButton";
+import AddToCartButton from "@/components/UI/AddToCartButton";
+import { useGetProductsQuery } from "@/redux/features/products/productApi";
+import { resolveMediaUrl } from "@/utils/media";
 
-const PRODUCT = {
-  name: "Zino Honduras Robusto Cigars – Box of 25",
-  price: 456.0,
-  image: "https://i.ibb.co/4wCff0y7/01.png",
-};
-
-// ── Responsive card count (custom breakpoints) ─────────────────────────────────
-// sm: 375px | md: 768px | lg: 1024px | xl: 1336px
 const getCardCount = () => {
   if (typeof window === "undefined") return 4;
-  if (window.innerWidth >= 1336) return 4; // xl
-  if (window.innerWidth >= 1024) return 3; // lg
-  if (window.innerWidth >= 768)  return 2; // md
-  return 1;                                // sm / mobile
+  if (window.innerWidth >= 1336) return 4;
+  if (window.innerWidth >= 1024) return 3;
+  if (window.innerWidth >= 768) return 2;
+  return 1;
 };
 
-const NewArrivals = () =>  {
+const NewArrivals = () => {
   const [cardCount, setCardCount] = useState(getCardCount);
   const [start, setStart] = useState(0);
   const trackRef = useRef(null);
 
-  // 20 items so the carousel actually has room to scroll on every breakpoint
-  const items = Array.from({ length: 20 }, (_, i) => ({ id: i, ...PRODUCT }));
+  const { data } = useGetProductsQuery({
+    featured: false,
+    sort: "newest",
+    page: 1,
+    limit: 12,
+  });
+
+  const items = useMemo(
+    () =>
+      (data?.data || []).map((product) => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: resolveMediaUrl(product.image) || "",
+      })),
+    [data?.data],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,11 +53,34 @@ const NewArrivals = () =>  {
   const canPrev = start > 0;
   const canNext = start + cardCount < items.length;
 
+  if (!items.length) {
+    return (
+      <section className="w-full bg-white px-3 xl:px-0 py-10 md:py-12 xl:py-24">
+        <div className="mx-auto xl:container">
+          <div className="mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="h-px w-8 bg-[#BF8D2F]" />
+                <span className="text-xs md:text-sm xl:text-base tracking-[0.18em] text-neutral-500">
+                  Just In
+                </span>
+              </div>
+              <h2 className="font-serif md:font-corvinus text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium text-neutral-900">
+                New{" "}
+                <span className="bg-gradient-to-r md:font-corvinus from-[#b9862f] to-[#e0b563] font-medium bg-clip-text text-transparent">
+                  Arrivals
+                </span>
+              </h2>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="w-full bg-white px-3 xl:px-0 py-10  md:py-12 xl:py-24 ">
       <div className="mx-auto xl:container">
-
-        {/* Header */}
         <div className="mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="mb-2 flex items-center gap-2">
@@ -56,7 +90,7 @@ const NewArrivals = () =>  {
               </span>
             </div>
             <h2 className="font-serif md:font-corvinus text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium text-neutral-900">
-              New {" "}
+              New{" "}
               <span className="bg-gradient-to-r md:font-corvinus from-[#b9862f] to-[#e0b563] font-medium bg-clip-text text-transparent">
                 Arrivals
               </span>
@@ -71,7 +105,6 @@ const NewArrivals = () =>  {
           </button>
         </div>
 
-        {/* Carousel */}
         <div className="relative">
           <button
             type="button"
@@ -108,80 +141,61 @@ const NewArrivals = () =>  {
                   style={{ width: `${100 / items.length}%` }}
                   className="w-full h-full shrink-0 border-r border-neutral-200 last:border-r-0"
                 >
-                  <GifRevealWrapperCard
-                    borderSize={5}
-                    className="w-full h-full"
-                  >
-                <article className="group/card flex flex-col w-full h-full">
-                  <div className="aspect-square w-full overflow-hidden bg-white p-3 md:p-4">
-                    <Image
-                     width={300}
-                     height={300}
-                      src={item.image}
-                      alt={item.name}
-                      className="h-full w-full object-contain transition-transform duration-300 group-hover/card:scale-[1.03]"
-                    />
-                  </div>
+                  <GifRevealWrapperCard borderSize={5} className="w-full h-full">
+                    <article className="group/card flex flex-col w-full h-full">
+                      <div className="aspect-square w-full overflow-hidden bg-white p-3 md:p-4">
+                        <ProductPhoto
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-contain transition-transform duration-300 group-hover/card:scale-[1.03]"
+                        />
+                      </div>
 
-                  <div className="bg-white border-t border-neutral-200 px-4 py-3 md:px-5 md:py-4">
-                    <h3 className="text-xs md:text-sm xl:text-base font-semibold leading-snug text-neutral-800">
-                      {item.name}
-                    </h3>
+                      <div className="bg-white border-t border-neutral-200 px-4 py-3 md:px-5 md:py-4">
+                        <h3 className="text-xs md:text-sm xl:text-base font-semibold leading-snug text-neutral-800">
+                          {item.name}
+                        </h3>
 
-                    {/* Price <-> Actions. Fixed-height wrapper so no stray gap is reserved. */}
-                    <div className="relative mt-1.5 md:mt-2 h-9 md:h-10 overflow-hidden">
-                      {/* Default state: price — fades out and eases up slightly */}
-                      <p
-                        className="absolute inset-0 flex items-center text-base md:text-lg xl:text-xl font-bold text-[#BF8D2F]
+                        <div className="relative mt-1.5 md:mt-2 h-9 md:h-10 overflow-hidden">
+                          <p
+                            className="absolute inset-0 flex items-center text-base md:text-lg xl:text-xl font-bold text-[#BF8D2F]
                                    transition-all duration-300 ease-out
                                    opacity-100 translate-y-0
                                    group-hover/card:opacity-0 group-hover/card:-translate-y-2
                                    pointer-events-none"
-                      >
-                        £{item.price.toFixed(2)}
-                      </p>
+                          >
+                            £{Number(item.price).toFixed(2)}
+                          </p>
 
-                      {/* Hover state: Explore Collection + wishlist — slides up from below */}
-                      <div
-                        className="w-full absolute inset-0 flex items-center gap-2
+                          <div
+                            className="w-full absolute inset-0 flex items-center gap-2
                                    transition-all duration-300 ease-out delay-75
                                    opacity-0 translate-y-4
                                    group-hover/card:opacity-100 group-hover/card:translate-y-0
                                    pointer-events-none group-hover/card:pointer-events-auto"
-                      >
-                        <GifRevealWrapper borderSize={4} className="flex-1">
-                        <button
-                            type="button"
-                            className="w-full h-full rounded-sm bg-[#BF8D2F] px-3 py-3 text-xs md:text-sm font-semibold
-                                    text-white transition-colors hover:bg-[#a67809]
-                                    flex items-center justify-center"
-                        >
-                            <span>Explore Collection</span>
-                        </button>
-                        </GifRevealWrapper>
-                        <button
-                          type="button"
-                          aria-label="Add to wishlist"
-                          className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-sm
+                          >
+                            <GifRevealWrapper borderSize={4} className="flex-1">
+                              <AddToCartButton productId={item.id} />
+                            </GifRevealWrapper>
+                            <WishlistHeartButton
+                              productId={item.id}
+                              className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-sm
                                      border border-neutral-300 text-neutral-700 transition-colors
                                      hover:border-neutral-900 hover:text-neutral-900"
-                        >
-                          <Heart size={32} strokeWidth={1.75} />
-                        </button>
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </article>
-                </GifRevealWrapperCard>
+                    </article>
+                  </GifRevealWrapperCard>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );
-}
+};
 
 export default NewArrivals;

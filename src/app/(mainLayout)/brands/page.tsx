@@ -27,7 +27,7 @@ const Page = () => {
     <hr className="border-t border-[#E5E5E5] my-1" />
 
     <Brands />
-    <br /> <br />
+    <br /> 
     </section>
   );
 };

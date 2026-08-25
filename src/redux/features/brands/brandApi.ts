@@ -13,6 +13,7 @@ export type Brand = {
   description: string;
   subtitles: string[];
   category: BrandCategory;
+  productCount?: number;
   createdAt?: string;
   updatedAt?: string;
 };

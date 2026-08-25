@@ -33,6 +33,9 @@ const OurBrands = () => {
               className="px-2 lg:px-6 py-2 text-[16px] md:text-[24px] text-neutral-500 hover:text-[#BF8D2F] transition-colors"
             >
               {brand.title}
+              {/* {(brand.productCount ?? 0) > 0 ? (
+                <span className="ml-1 text-sm text-neutral-400">({brand.productCount})</span>
+              ) : null} */}
             </Link>
           ))}
         </div>
