@@ -85,9 +85,6 @@ const AgeGate = ({ children }: AgeGateProps) => {
                     alt="logo"
                     className="w-10 h-8"
                   />
-                  <span className="text-[12px] md:text-[20px] lg:text-[22px] tracking-wide font-medium text-[#BF8D2F]">
-                    SMKR
-                  </span>
                 </Link>
               </div>
 

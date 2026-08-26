@@ -1,8 +1,9 @@
 "use client";
+import { useState } from "react";
 import { Drawer } from "antd";
 import { CloseOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
 import ProductPhoto from "@/components/UI/ProductPhoto";
+import CheckoutModal from "@/components/UI/CheckoutModal";
 
 export type CartItem = {
   id: string;
@@ -20,11 +21,19 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) => {
-  const router = useRouter();
-
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
+  const openCheckout = () => {
+    if (!cartItems.length) return;
+    setCheckoutItems(cartItems);
+    onClose();
+    setCheckoutOpen(true);
+  };
+
   return (
+    <>
     <Drawer
       placement="right"
       onClose={onClose}
@@ -58,7 +67,7 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
                 <ProductPhoto
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-container p-1"
                 />
               </div>
 
@@ -104,8 +113,9 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
         </div>
         <button
           type="button"
-          className="w-full bg-[#BF8D2F] text-white font-semibold py-3.5 rounded-sm hover:opacity-90 transition"
-          onClick={() => router.push("/checkout")}
+          className="w-full bg-[#BF8D2F] text-white font-semibold py-3.5 rounded-sm hover:opacity-90 transition disabled:opacity-50"
+          disabled={!cartItems.length}
+          onClick={openCheckout}
         >
           Proceed to Checkout
         </button>
@@ -118,6 +128,16 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
         </button>
       </div>
     </Drawer>
+      <CheckoutModal
+        open={checkoutOpen}
+        onClose={() => {
+          setCheckoutOpen(false);
+          setCheckoutItems([]);
+        }}
+        onCartCleared={() => setCheckoutItems([])}
+        cartItems={checkoutItems}
+      />
+    </>
   );
 };
 

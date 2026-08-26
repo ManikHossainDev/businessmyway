@@ -2,11 +2,10 @@
 
 import { Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useGetOrdersQuery, type ShopOrder } from "@/redux/features/orders/orderApi";
-import WriteReviewForm from "@/components/UI/WriteReviewForm";
+import { useGetAdminOrdersQuery, type ShopOrder } from "@/redux/features/orders/orderApi";
 
-const OrderHistory = () => {
-  const { data, isLoading } = useGetOrdersQuery();
+const AdminOrdersPage = () => {
+  const { data, isLoading } = useGetAdminOrdersQuery();
   const orders = data?.data || [];
 
   const columns: ColumnsType<ShopOrder> = [
@@ -14,7 +13,7 @@ const OrderHistory = () => {
       title: "Order",
       dataIndex: "orderNumber",
       key: "orderNumber",
-      render: (value: string) => <span className="font-semibold text-[#2b2b2b]">#{value}</span>,
+      render: (value: string) => <span className="font-semibold">#{value}</span>,
     },
     {
       title: "Date",
@@ -30,27 +29,34 @@ const OrderHistory = () => {
           : "—",
     },
     {
-      title: "Items",
-      dataIndex: "items",
-      key: "items",
-      render: (items: ShopOrder["items"]) => (
-        <span className="text-[#4d4a44]">
-          {items.map((item) => `${item.name} × ${item.qty}`).join(" · ")}
-        </span>
+      title: "Customer",
+      key: "customer",
+      render: (_, order) => (
+        <div>
+          <p className="font-medium">{order.customer.name}</p>
+          <p className="text-xs text-[#8A8174]">{order.customer.email}</p>
+          <p className="text-xs text-[#8A8174]">{order.customer.phone}</p>
+        </div>
       ),
     },
     {
       title: "Delivery",
       key: "delivery",
       render: (_, order) => (
-        <div className="max-w-[220px]">
-          <p className="font-medium text-[#2b2b2b]">
+        <div className="max-w-[240px]">
+          <p className="font-medium">
             {order.deliveryType === "paid_delivery" ? "Paid Delivery" : "Case In Delivery"}
           </p>
-          <p className="text-xs text-[#9a958c]">{order.customer.name}</p>
-          <p className="line-clamp-2 text-xs text-[#9a958c]">{order.customer.location}</p>
+          <p className="text-sm text-[#5C564C]">{order.customer.location}</p>
         </div>
       ),
+    },
+    {
+      title: "Items",
+      dataIndex: "items",
+      key: "items",
+      render: (items: ShopOrder["items"]) =>
+        items.map((item) => `${item.name} × ${item.qty}`).join(" · "),
     },
     {
       title: "Status",
@@ -75,37 +81,33 @@ const OrderHistory = () => {
       key: "subtotal",
       align: "right",
       render: (_value: number, order: ShopOrder) => (
-        <span className="font-bold text-[#c9822a]">£{Number(order.total ?? order.subtotal).toFixed(2)}</span>
+        <span className="font-bold text-[#BF8D2F]">£{Number(order.total ?? order.subtotal).toFixed(2)}</span>
       ),
     },
   ];
 
   return (
-    <div className="font-sans mb-7">
-      <h1 className="font-serif text-[32px] font-bold mb-4">
-        <span className="text-[#1a1a1a]">Order </span>
-        <span className="text-[#c9822a]">History</span>
-      </h1>
+    <div className="w-full space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold">Orders</h2>
+        <p className="mt-1 text-sm text-[#8A8174]">
+          {orders.length} {orders.length === 1 ? "order" : "orders"} from customers
+        </p>
+      </div>
 
-      <div className="overflow-hidden rounded-[10px] border border-[#e9e6df] bg-white">
+      <div className="overflow-hidden rounded-2xl border border-[#E8E0D4] bg-white">
         <Table
           rowKey="id"
           columns={columns}
           dataSource={orders}
           loading={isLoading}
           pagination={{ pageSize: 10, hideOnSinglePage: true }}
-          scroll={{ x: 860 }}
-          locale={{ emptyText: "You have not placed any orders yet." }}
+          scroll={{ x: 980 }}
+          locale={{ emptyText: "No orders yet." }}
         />
       </div>
-
-      {orders.length > 0 ? (
-        <div className="mt-8 max-w-xl">
-          <WriteReviewForm compact />
-        </div>
-      ) : null}
     </div>
   );
 };
 
-export default OrderHistory;
+export default AdminOrdersPage;

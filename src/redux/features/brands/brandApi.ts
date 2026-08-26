@@ -36,6 +36,7 @@ export type PaginationMeta = {
 
 export type BrandListParams = {
   category?: string;
+  brand?: string;
   page?: number;
   limit?: number;
 };
@@ -60,6 +61,7 @@ const brandApi = baseApi.injectEndpoints({
         url: "/brands",
         params: {
           ...(arg?.category ? { category: arg.category } : {}),
+          ...(arg?.brand ? { brand: arg.brand } : {}),
           page: arg?.page ?? 1,
           limit: arg?.limit ?? 12,
         },

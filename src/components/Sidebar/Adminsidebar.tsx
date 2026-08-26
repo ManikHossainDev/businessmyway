@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Modal } from "antd";
-import { FiAward, FiBox, FiHome, FiLayers, FiLogOut, FiMail, FiSettings, FiShoppingBag, FiUser } from "react-icons/fi";
+import { FiAward, FiBox, FiHome, FiLayers, FiLogOut, FiMail, FiMessageSquare, FiSettings, FiShoppingBag, FiUser } from "react-icons/fi";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 import logo from "@/assets/logo/logo.png";
@@ -26,7 +26,7 @@ const menuItems = [
   { id: "category", label: "Category", icon: FiLayers, href: "/category" },
   { id: "brands", label: "Brands", icon: FiAward, href: "/admin-brands" },
   { id: "subscribers", label: "Subscribers", icon: FiMail, href: "/admin-subscribers" },
-  { id: "inventory", label: "Inventory", icon: FiBox, href: "/inventory" },
+  { id: "reviews", label: "Reviews", icon: FiMessageSquare, href: "/admin-reviews" },
   { id: "settings", label: "Settings", icon: FiSettings, href: "/settings" },
 ];
 

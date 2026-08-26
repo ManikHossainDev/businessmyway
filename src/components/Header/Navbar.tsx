@@ -33,7 +33,11 @@ const Navbar = () => {
   const cookieUser = useAppSelector(selectCurrentUser);
   const { data } = useGetProfileQuery(undefined, { skip: !token });
   const { data: wishlistIdsData } = useGetWishlistIdsQuery(undefined, { skip: !token });
-  const { data: cartData } = useGetCartQuery(undefined, { skip: !token });
+  const { data: cartData } = useGetCartQuery(undefined, {
+    skip: !token,
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
   const [updateCartQty] = useUpdateCartQtyMutation();
   const profile = data?.data || cookieUser;
   const wishlistCount = token ? wishlistIdsData?.data?.length ?? 0 : 0;
@@ -75,17 +79,16 @@ const Navbar = () => {
     <nav className="border-b border-[#E5E5E5] shadow-[0px_4px_16px_0px_#00000026]">
       <div className="xl:container mx-auto flex justify-between items-center py-3 px-2 xl:px-0">
         {/* Logo + Brand name */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center shrink-0">
           <Image
             src={logo}
-            width={50}
-            height={50}
-            alt="logo"
-            className="w-10 h-8"
+            alt="British Smokes"
+            width={360}
+            height={100}
+            quality={100}
+            priority
+            className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[220px] md:h-12 md:max-w-[260px] xl:h-[52px] xl:max-w-[300px]"
           />
-          <span className="text-[12px] md:text-[20px] lg:text-[22px] tracking-wide font-medium text-[#BF8D2F]">
-            SMKR
-          </span>
         </Link>
 
         {/* Desktop Navigation Links */}

@@ -1,6 +1,5 @@
 import Brands from "@/components/Pages/Brands/Brands";
-
-
+import { Suspense } from "react";
 
 const Page = () => {
   return (
@@ -26,7 +25,9 @@ const Page = () => {
 
     <hr className="border-t border-[#E5E5E5] my-1" />
 
-    <Brands />
+    <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading brands...</div>}>
+      <Brands />
+    </Suspense>
     <br /> 
     </section>
   );

@@ -46,12 +46,34 @@ const cartApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["cart"],
     }),
+    clearCart: builder.mutation<CartResponse, void>({
+      query: () => ({
+        url: "/cart",
+        method: "DELETE",
+      }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        dispatch(
+          baseApi.util.updateQueryData("getCart", undefined, (draft) => {
+            draft.data = [];
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          dispatch(baseApi.util.invalidateTags(["cart"]));
+        }
+      },
+      invalidatesTags: ["cart"],
+    }),
   }),
 });
+
+export { cartApi };
 
 export const {
   useGetCartQuery,
   useAddToCartMutation,
   useUpdateCartQtyMutation,
   useRemoveFromCartMutation,
+  useClearCartMutation,
 } = cartApi;

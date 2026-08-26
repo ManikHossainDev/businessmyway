@@ -8,6 +8,7 @@ export const ADMIN_ROUTES = [
   "/products",
   "/admin-brands",
   "/admin-subscribers",
+  "/admin-reviews",
   "/admin-users",
   "/admin-about-us",
   "/admin-contact-us",
@@ -24,7 +25,7 @@ export const USER_PRIVATE_ROUTES = [
   "/changepass",
 ];
 
-export const SHARED_PRIVATE_ROUTES = ["/wishlist", "/mywishlist"];
+export const SHARED_PRIVATE_ROUTES = ["/wishlist", "/mywishlist", "/order-success"];
 
 export const AUTH_ROUTES = [
   "/login",

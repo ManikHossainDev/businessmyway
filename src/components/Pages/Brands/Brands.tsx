@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ConfigProvider, Pagination, Spin } from 'antd';
+import { useSearchParams } from 'next/navigation';
 import GifRevealWrapperCard from '@/components/UI/GifRevealWrapperCard';
 import { useGetCategoriesQuery } from '@/redux/features/category/categoryApi';
 import { useGetBrandsQuery } from '@/redux/features/brands/brandApi';
@@ -10,13 +11,19 @@ const ALL_BRANDS = 'All Brands';
 const PAGE_SIZE = 12;
 
 const Brands = () => {
+  const searchParams = useSearchParams();
+  const brandParam = searchParams.get('brand')?.trim() || '';
   const [activeCategory, setActiveCategory] = useState(ALL_BRANDS);
   const [currentPage, setCurrentPage] = useState(1);
   const { data: categoryData, isLoading: isCategoriesLoading } =
     useGetCategoriesQuery();
   const { data: brandData, isFetching: isBrandsLoading } = useGetBrandsQuery({
-    ...(activeCategory === ALL_BRANDS ? {} : { category: activeCategory }),
-    page: currentPage,
+    ...(brandParam
+      ? { brand: brandParam }
+      : activeCategory === ALL_BRANDS
+        ? {}
+        : { category: activeCategory }),
+    page: brandParam ? 1 : currentPage,
     limit: PAGE_SIZE,
   });
 
@@ -35,8 +42,11 @@ const Brands = () => {
 
   return (
     <div className="xl:container mx-auto px-2 xl:px-0 py-6">
-      <p className="text-gray-400 mb-4">Home / Brands</p>
+      <p className="text-gray-400 mb-4">
+        {brandParam ? `Home / Brands / ${brandParam}` : 'Home / Brands'}
+      </p>
 
+      {brandParam ? null : (
       <div className="flex flex-wrap gap-2 mb-6">
         {isCategoriesLoading ? (
           <Spin />
@@ -57,6 +67,7 @@ const Brands = () => {
           ))
         )}
       </div>
+      )}
 
       {isBrandsLoading ? (
         <div className="flex min-h-[240px] items-center justify-center rounded-md bg-white">
@@ -64,27 +75,25 @@ const Brands = () => {
         </div>
       ) : brands.length === 0 ? (
         <p className="rounded-md bg-white px-6 py-16 text-center text-sm text-gray-500">
-          No brands found in this category.
+          No brands found{brandParam ? ` for “${brandParam}”.` : ' in this category.'}
         </p>
       ) : (
         <div className="rounded-md bg-white p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-4">
             {brands.map((brand) => (
-              <GifRevealWrapperCard borderSize={4} key={brand.id}>
-                <div className="text-center px-4 py-4 border bg-white">
-                  <h3 className="text-xl font-serif text-gray-900 mb-2">
+              <GifRevealWrapperCard borderSize={4} key={brand.id} className="h-full">
+                <div className="flex h-full min-h-[260px] flex-col border bg-white px-4 py-4 text-center">
+                  <h3 className="mb-2 line-clamp-1 text-xl font-serif text-gray-900">
                     {brand.title}
                   </h3>
 
-                  {brand.subtitles.length > 0 && (
-                    <p className="text-amber-600 text-sm mb-3">
-                      {brand.subtitles.join(' / ')}
-                    </p>
-                  )}
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="mb-3 min-h-[20px] line-clamp-1 text-sm text-amber-600">
+                    {brand.subtitles.length > 0 ? brand.subtitles.join(" / ") : "\u00A0"}
+                  </p>
+                  <p className="mb-3 line-clamp-4 flex-1 text-sm leading-relaxed text-gray-500">
                     {brand.description}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="mt-auto text-sm text-gray-500">
                     ({brand.productCount} products)
                   </p>
                 </div>
@@ -94,7 +103,7 @@ const Brands = () => {
         </div>
       )}
 
-      {total > 0 && (
+      {total > 0 && !brandParam && (
         <div className="mt-6 flex justify-center">
           <ConfigProvider theme={{ token: { colorPrimary: '#C1892F' } }}>
             <Pagination

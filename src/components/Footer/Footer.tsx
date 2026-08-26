@@ -4,20 +4,20 @@ import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
 import logo from "@/assets/logo/logo.png";
 import Image from "next/image";
 const shopLinks = [
-  { label: "Cigarettes", href: "/shop/cigarettes" },
-  { label: "Cigars", href: "/shop/cigars" },
-  { label: "Pipe Tobacco", href: "/shop/pipe-tobacco" },
-  { label: "Rolling Tobacco", href: "/shop/rolling-tobacco" },
-  { label: "Accessories", href: "/shop/accessories" },
-  { label: "New Arrivals", href: "/shop/new-arrivals" },
+  { label: "Cigarettes", href: "/cigarettes" },
+  { label: "Cigars", href: "/cigars" },
+  { label: "Pipe Tobacco", href: "/tobacco" },
+  { label: "search result", href: "/searchresult" },
+  { label: "Accessories", href: "/accessories" },
+  { label: "New Arrivals", href: "/newarrivals" },
 ];
 
 const brandLinks = [
-  { label: "Davidoff", href: "/brands/davidoff" },
-  { label: "Cohiba", href: "/brands/cohiba" },
-  { label: "Montecristo", href: "/brands/montecristo" },
-  { label: "Dunhill", href: "/brands/dunhill" },
-  { label: "Partagás", href: "/brands/partagas" },
+  { label: "Davidoff", href: "/brands?brand=Davidoff" },
+  { label: "Cohiba", href: "/brands?brand=Cohiba" },
+  { label: "Montecristo", href: "/brands?brand=Montecristo" },
+  { label: "Dunhill", href: "/brands?brand=Dunhill" },
+  { label: "Partagás", href: "/brands?brand=Partagás" },
   { label: "All Brands", href: "/brands" },
 ];
 
@@ -70,17 +70,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand / About */}
           <div className="md:col-span-4">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link href="/" className="mb-4 inline-flex items-center">
               <Image
                 src={logo}
-                width={50}
-                height={50}
-                alt="logo"
-                className="w-10 h-8"
+                width={360}
+                height={100}
+                quality={100}
+                alt="British Smokes"
+                className="h-12 w-auto max-w-[220px] object-contain object-left md:h-14 md:max-w-[260px] lg:h-16 lg:max-w-[300px]"
               />
-              <span className="text-[12px] md:text-[18px] lg:text-[22px] font-semibold tracking-wide text-[#BF8D2F]">
-                SMKR
-              </span>
             </Link>
             <p className="text-[10px] md:text-[16px] lg:text-[18px] text-gray-500 leading-relaxed mb-5 max-w-xs">
               Be the first to discover our latest arrivals, exclusive releases, and members-only offers. Thoughtfully curated updates, delivered to your inbox—never more than twice a month. No spam, ever.

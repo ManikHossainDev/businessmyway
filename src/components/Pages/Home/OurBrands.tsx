@@ -29,7 +29,7 @@ const OurBrands = () => {
           {brands.map((brand) => (
             <Link
               key={brand.id}
-              href="/brands"
+              href={`/brands?brand=${encodeURIComponent(brand.title)}`}
               className="px-2 lg:px-6 py-2 text-[16px] md:text-[24px] text-neutral-500 hover:text-[#BF8D2F] transition-colors"
             >
               {brand.title}
