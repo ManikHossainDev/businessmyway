@@ -8,6 +8,7 @@ import WishlistHeartButton from "@/components/UI/WishlistHeartButton";
 import AddToCartButton from "@/components/UI/AddToCartButton";
 import { useGetProductsQuery } from "@/redux/features/products/productApi";
 import { resolveMediaUrl } from "@/utils/media";
+import Link from "next/link";
 
 const getCardCount = () => {
   if (typeof window === "undefined") return 4;
@@ -97,12 +98,12 @@ const NewArrivals = () => {
             </h2>
           </div>
 
-          <button
+          <Link href="/searchresult"
             type="button"
             className="rounded-sm border border-neutral-300 px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm xl:text-base font-medium text-neutral-800 transition-colors hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
           >
             View All Products
-          </button>
+          </Link>
         </div>
 
         <div className="relative">

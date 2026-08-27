@@ -31,24 +31,18 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const hasSearched = submittedQuery.trim().length > 0;
-  const showResults = hasSearched || Boolean(category);
-
   const { data: categoryData } = useGetCategoriesQuery();
   const categories = (categoryData?.data || []).filter((item) =>
     isProductCategory(item.name),
   );
 
-  const { data, isFetching, isLoading } = useGetProductsQuery(
-    {
-      search: submittedQuery.trim() || undefined,
-      category: category || undefined,
-      sort: sortBy,
-      page: currentPage,
-      limit: RESULTS_PER_PAGE,
-    },
-    { skip: !showResults },
-  );
+  const { data, isFetching, isLoading } = useGetProductsQuery({
+    search: submittedQuery.trim() || undefined,
+    category: category || undefined,
+    sort: sortBy,
+    page: currentPage,
+    limit: RESULTS_PER_PAGE,
+  });
 
   const products = (data?.data || []).map((product) => ({
     ...product,
@@ -69,7 +63,6 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
 
   const runSearch = (term: string) => {
     const next = term.trim();
-    if (!next && !category) return;
     setQuery(next);
     setSubmittedQuery(next);
     setCurrentPage(1);
@@ -90,7 +83,9 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
 
   const resultLabel = submittedQuery
     ? `${total} results for "${submittedQuery}"${category ? ` in ${category}` : ""}`
-    : `${total} products in ${category}`;
+    : category
+      ? `${total} products in ${category}`
+      : `All ${total} products`;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-white">
@@ -132,8 +127,8 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
             </button>
           </div>
 
-          <div className="mt-2">
-            <p className="mb-2 text-center text-xs text-gray-400">Popular Searches</p>
+          <div className="">
+            {/* <p className="mb-2 text-center text-xs text-gray-400">Popular Searches</p> */}
             <div className="flex flex-wrap justify-center gap-2">
               {categories.map((item) => {
                 const isSelected = category === item.name;
@@ -159,10 +154,9 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
           </div>
         </div>
 
-        {showResults && (
-          <div className="mt-4">
+        <div className="mt-4">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm text-gray-500">{resultLabel}</p>
+              <p className="text-lg -mb-2 text-gray-500"> {resultLabel}</p>
 
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -228,7 +222,6 @@ const SearchResult = ({ onClose }: { onClose?: () => void }) => {
               </div>
             )}
           </div>
-        )}
       </div>
     </div>
   );

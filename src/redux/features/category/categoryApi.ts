@@ -5,6 +5,7 @@ import { baseApi } from "@/redux/api/baseApi";
 export type Category = {
   id: string;
   name: string;
+  isLocked?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -47,6 +48,13 @@ const categoryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["category"],
     }),
+    deleteCategory: builder.mutation<{ success: boolean; message?: string }, string>({
+      query: (id) => ({
+        url: `/admin/categories/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["category"],
+    }),
   }),
 });
 
@@ -55,4 +63,5 @@ export const {
   useGetAdminCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
 } = categoryApi;

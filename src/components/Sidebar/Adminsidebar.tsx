@@ -52,26 +52,21 @@ const AdminSidebar = ({
     <>
       <div
         className={`flex items-center border-b border-[#E8E0D4] ${
-          compact ? "justify-center px-3 py-5" : "gap-3 px-5 py-[14px]"
+          compact ? "justify-center px-3 py-5" : "gap-3 px-5 py-[9px]"
         }`}
       >
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-center gap-3"
+          className="flex items-center justify-center gap-3"
         >
           <Image
             src={logo}
             alt="SMKR"
             width={40}
             height={40}
-            className="h-10 w-10 object-contain"
+            className="w-[250px] h-[50px]  object-contain mx-auto"
           />
-          {!compact && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold lg:text-lg xl:text-xl tracking-wide text-[#1A1A1A]">British Smokes</p>
-            </div>
-          )}
         </Link>
       </div>
 

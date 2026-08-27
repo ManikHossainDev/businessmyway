@@ -29,16 +29,21 @@ const GifRevealWrapperCard = ({
       </div>
 
       <span
-        className="absolute inset-0 rounded-sm bg-center object-cover"
+        className="absolute inset-0 rounded-sm bg-center bg-cover"
         style={{ backgroundImage: `url(${gif})` }}
       />
 
       <div
-        className={`absolute inset-0 z-10 transition-all duration-300 ease-in-out
-                    group-hover:inset-[var(--gap)] ${active ? "inset-[var(--gap)]" : ""}`}
+        className={`absolute z-10 overflow-hidden transition-[top,right,bottom,left] duration-300 ease-in-out ${
+          active
+            ? "top-[var(--gap)] right-[var(--gap)] bottom-[var(--gap)] left-[var(--gap)]"
+            : "top-0 right-0 bottom-0 left-0 group-hover:top-[var(--gap)] group-hover:right-[var(--gap)] group-hover:bottom-[var(--gap)] group-hover:left-[var(--gap)]"
+        }`}
         style={{ "--gap": `${borderSize}px` } as React.CSSProperties}
       >
-        <div className="h-full w-full">{children}</div>
+        <div className="h-full w-full [&>*]:!box-border [&>*]:!h-full [&>*]:!w-full">
+          {children}
+        </div>
       </div>
     </div>
   );
