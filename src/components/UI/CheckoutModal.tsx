@@ -6,7 +6,9 @@ import Swal from "sweetalert2";
 import { LockOutlined } from "@ant-design/icons";
 import ProductPhoto from "@/components/UI/ProductPhoto";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { isAdminRole } from "@/utils/role";
 import { baseApi } from "@/redux/api/baseApi";
 import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
 import { useCheckoutOrderMutation } from "@/redux/features/orders/orderApi";
@@ -83,8 +85,9 @@ const DeliveryOption = ({
 const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModalProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const isAdmin = isAdminRole(useAppSelector(selectCurrentUser)?.role);
   const [form] = Form.useForm<CheckoutFormValues>();
-  const { data: profileData, isFetching } = useGetProfileQuery({}, { skip: !open });
+  const { data: profileData, isFetching } = useGetProfileQuery({}, { skip: !open || isAdmin });
   const [checkoutOrder, { isLoading }] = useCheckoutOrderMutation();
   const [clearCart] = useClearCartMutation();
   const profile = profileData?.data;
@@ -114,6 +117,14 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
   };
 
   const onPay = async () => {
+    if (isAdmin) {
+      await Swal.fire({
+        icon: "info",
+        title: "Only customers",
+        text: "Only customers can place orders.",
+      });
+      return;
+    }
     try {
       const values = await form.validateFields();
       const result = await checkoutOrder({
@@ -128,7 +139,7 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
       }
       if (result.data?.direct && result.data.orderId) {
         onClose();
-        router.push(`/order-success?orderId=${result.data.orderId}&direct=1`);
+        router.push("/orderhistory?review=1");
         return;
       }
       if (result.data?.url) {

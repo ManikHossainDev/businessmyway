@@ -4,6 +4,10 @@ import { Drawer } from "antd";
 import { CloseOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import ProductPhoto from "@/components/UI/ProductPhoto";
 import CheckoutModal from "@/components/UI/CheckoutModal";
+import Swal from "sweetalert2";
+import { useAppSelector } from "@/redux/hooks";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { isAdminRole } from "@/utils/role";
 
 export type CartItem = {
   id: string;
@@ -21,12 +25,21 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) => {
+  const isAdmin = isAdminRole(useAppSelector(selectCurrentUser)?.role);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   const openCheckout = () => {
     if (!cartItems.length) return;
+    if (isAdmin) {
+      Swal.fire({
+        icon: "info",
+        title: "Only users",
+        text: "Only customers can place orders.",
+      });
+      return;
+    }
     setCheckoutItems(cartItems);
     onClose();
     setCheckoutOpen(true);

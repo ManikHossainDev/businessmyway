@@ -53,7 +53,7 @@ const cartApi = baseApi.injectEndpoints({
       }),
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         dispatch(
-          baseApi.util.updateQueryData("getCart", undefined, (draft) => {
+          cartApi.util.updateQueryData("getCart", undefined, (draft) => {
             draft.data = [];
           }),
         );

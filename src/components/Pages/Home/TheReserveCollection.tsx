@@ -3,6 +3,7 @@ import Image from "next/image";
 import TheReserve from "@/assets/home/TheReserve.png";
 // import Rectangle from "@/assets/home/Rectangle.gif";
 import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+import Link from "next/link";
 const TheReserveCollection = () => {
   return (
     <section className="relative py-10  h-[38vh] sm:h-[48vh] md:h-[60vh] lg:h-[72vh] overflow-hidden">
@@ -37,11 +38,13 @@ const TheReserveCollection = () => {
 
           {/* CTAs */}
           <div className=" mt-2 md:mt-4 lg:mt-8 flex flex-row gap-[10px]">
+            <Link href="/searchresult">
           <GifRevealWrapper borderSize={3}>
           <button className="w-[200px] px-2 rounded-sm  h-[40px] md:h-[56px]  bg-[#BF8D2F] text-white font-medium lg:px-[10px] lg:py-[10px] hover:bg-[#a97922] transition-colors">
             Browse Reserve
           </button>
           </GifRevealWrapper>
+          </Link>
           </div>
         </div>
       </div>

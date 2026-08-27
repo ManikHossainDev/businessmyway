@@ -14,6 +14,7 @@ import "./features/cart/cartApi";
 import "./features/orders/orderApi";
 import "./features/notifications/notificationApi";
 import "./features/reviews/reviewApi";
+import "./features/dashboard/dashboardApi";
 
 export const store = configureStore({
   reducer: {

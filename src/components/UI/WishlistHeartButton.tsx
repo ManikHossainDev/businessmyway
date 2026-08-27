@@ -15,11 +15,13 @@ type WishlistHeartButtonProps = {
   productId?: string;
   iconSize?: number;
   className?: string;
+  onSuccess?: () => void;
 };
 
 const WishlistHeartButton = ({
   productId,
   iconSize = 18,
+  onSuccess,
   className = "flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-gray-300 text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 md:h-10 md:w-10",
 }: WishlistHeartButtonProps) => {
   const router = useRouter();
@@ -36,6 +38,7 @@ const WishlistHeartButton = ({
     event.stopPropagation();
     if (!productId || busy) return;
     if (!token) {
+      onSuccess?.();
       router.push("/login");
       return;
     }
@@ -45,6 +48,7 @@ const WishlistHeartButton = ({
       } else {
         await addToWishlist(productId).unwrap();
       }
+      onSuccess?.();
     } catch {
       // duplicate add is ignored after invalidate
     }

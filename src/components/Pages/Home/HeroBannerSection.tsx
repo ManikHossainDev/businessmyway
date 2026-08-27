@@ -43,7 +43,7 @@ const HeroBannerSection = () => {
           </p>
 
           <div className="mt-2 md:mt-4 lg:mt-8 flex flex-row gap-[10px]">
-            <Link href="/cigarettes">
+            <Link href="/searchresult">
               <GifRevealWrapper borderSize={3}>
                 <button
                   type="button"

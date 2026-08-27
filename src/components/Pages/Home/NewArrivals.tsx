@@ -1,11 +1,8 @@
 "use client";
+
 import { useState, useEffect, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import GifRevealWrapperCard from "@/components/UI/GifRevealWrapperCard";
-import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
-import ProductPhoto from "@/components/UI/ProductPhoto";
-import WishlistHeartButton from "@/components/UI/WishlistHeartButton";
-import AddToCartButton from "@/components/UI/AddToCartButton";
+import ShopProductCard from "@/components/UI/ShopProductCard";
 import { useGetProductsQuery } from "@/redux/features/products/productApi";
 import { resolveMediaUrl } from "@/utils/media";
 import Link from "next/link";
@@ -33,9 +30,7 @@ const NewArrivals = () => {
   const items = useMemo(
     () =>
       (data?.data || []).map((product) => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
+        ...product,
         image: resolveMediaUrl(product.image) || "",
       })),
     [data?.data],
@@ -98,8 +93,8 @@ const NewArrivals = () => {
             </h2>
           </div>
 
-          <Link href="/searchresult"
-            type="button"
+          <Link
+            href="/searchresult"
             className="rounded-sm border border-neutral-300 px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm xl:text-base font-medium text-neutral-800 transition-colors hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
           >
             View All Products
@@ -142,53 +137,7 @@ const NewArrivals = () => {
                   style={{ width: `${100 / items.length}%` }}
                   className="w-full h-full shrink-0 border-r border-neutral-200 last:border-r-0"
                 >
-                  <GifRevealWrapperCard borderSize={5} className="w-full h-full">
-                    <article className="group/card flex flex-col w-full h-full">
-                      <div className="aspect-square w-full overflow-hidden bg-white p-3 md:p-4">
-                        <ProductPhoto
-                          src={item.image}
-                          alt={item.name}
-                          className="h-full w-full object-contain transition-transform duration-300 group-hover/card:scale-[1.03]"
-                        />
-                      </div>
-
-                      <div className="bg-white border-t border-neutral-200 px-4 py-3 md:px-5 md:py-4">
-                        <h3 className="text-xs md:text-sm xl:text-base font-semibold leading-snug text-neutral-800">
-                          {item.name}
-                        </h3>
-
-                        <div className="relative mt-1.5 md:mt-2 h-9 md:h-10 overflow-hidden">
-                          <p
-                            className="absolute inset-0 flex items-center text-base md:text-lg xl:text-xl font-bold text-[#BF8D2F]
-                                   transition-all duration-300 ease-out
-                                   opacity-100 translate-y-0
-                                   group-hover/card:opacity-0 group-hover/card:-translate-y-2
-                                   pointer-events-none"
-                          >
-                            £{Number(item.price).toFixed(2)}
-                          </p>
-
-                          <div
-                            className="w-full absolute inset-0 flex items-center gap-2
-                                   transition-all duration-300 ease-out delay-75
-                                   opacity-0 translate-y-4
-                                   group-hover/card:opacity-100 group-hover/card:translate-y-0
-                                   pointer-events-none group-hover/card:pointer-events-auto"
-                          >
-                            <GifRevealWrapper borderSize={4} className="flex-1">
-                              <AddToCartButton productId={item.id} />
-                            </GifRevealWrapper>
-                            <WishlistHeartButton
-                              productId={item.id}
-                              className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-sm
-                                     border border-neutral-300 text-neutral-700 transition-colors
-                                     hover:border-neutral-900 hover:text-neutral-900"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  </GifRevealWrapperCard>
+                  <ShopProductCard product={item} showSubtitle={false} />
                 </div>
               ))}
             </div>

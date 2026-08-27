@@ -16,6 +16,7 @@ import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
 import { useGetWishlistIdsQuery } from "@/redux/features/wishlist/wishlistApi";
 import { useGetCartQuery, useUpdateCartQtyMutation } from "@/redux/features/cart/cartApi";
 import { resolveMediaUrl } from "@/utils/media";
+import { isAdminRole } from "@/utils/role";
 
 const navLink = [
   { href: "/cigarettes", label: "Cigarettes" },
@@ -31,16 +32,22 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
   const cookieUser = useAppSelector(selectCurrentUser);
+  const isAdmin = isAdminRole(cookieUser?.role);
   const { data } = useGetProfileQuery(undefined, { skip: !token });
-  const { data: wishlistIdsData } = useGetWishlistIdsQuery(undefined, { skip: !token });
+  const { data: wishlistIdsData } = useGetWishlistIdsQuery(undefined, {
+    skip: !token || isAdmin,
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
   const { data: cartData } = useGetCartQuery(undefined, {
-    skip: !token,
+    skip: !token || isAdmin,
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
   });
   const [updateCartQty] = useUpdateCartQtyMutation();
   const profile = data?.data || cookieUser;
-  const wishlistCount = token ? wishlistIdsData?.data?.length ?? 0 : 0;
+  const wishlistIds = token ? wishlistIdsData?.data ?? [] : [];
+  const wishlistCount = Array.isArray(wishlistIds) ? wishlistIds.length : 0;
   const cartItems = (cartData?.data || []).map((item) => ({
     ...item,
     image: resolveMediaUrl(item.image) || "",
@@ -61,6 +68,7 @@ const Navbar = () => {
   const closeDrawer = () => setIsDrawerOpen(false);
 
   const showCart = () => {
+    if (isAdmin) return;
     if (!token) {
       router.push("/login");
       return;
@@ -87,12 +95,12 @@ const Navbar = () => {
             height={100}
             quality={100}
             priority
-            className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[220px] md:h-12 md:max-w-[260px] xl:h-[52px] xl:max-w-[300px]"
+            className="h-10 w-auto max-w-[180px] object-contain object-left md::h-11 md:max-w-[220px] md:h-12 md:max-w-[260px] xl:h-[52px] xl:max-w-[300px]"
           />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <ul className="hidden md:flex items-center gap-2  xl:gap-6">
+        <ul className="hidden lg:flex items-center gap-2 xl:gap-6">
           {navLink.map((link) => (
             <li key={link.href}>
               <ActiveLink href={link.href} label={link.label} />
@@ -101,7 +109,7 @@ const Navbar = () => {
         </ul>
 
         {/* Right section */}
-        <div className="flex items-center gap-2  xl:gap-6">
+        <div className="flex shrink-0 items-center gap-2 xl:gap-6">
           {/* Order phone number */}
           <div className="hidden lg:flex items-center gap-2 text-sm text-gray-700">
             <div className="flex flex-col leading-tight">
@@ -112,26 +120,30 @@ const Navbar = () => {
           </div>
 
           {/* Icon actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-3 sm:gap-4">
             <Link href="/searchresult" aria-label="Search">
               <FiSearch className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
             </Link>
-            <Link href="/mywishlist" aria-label="Wishlist" className="relative">
-              <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                  {wishlistCount > 9 ? "9+" : wishlistCount}
-                </span>
-              )}
-            </Link>
-            <button aria-label="Bag" onClick={showCart} className="relative">
-              <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
-            </button>
+            {isAdmin ? null : (
+              <Link href="/mywishlist" aria-label="Wishlist" className="relative">
+                <FiHeart className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
+                {wishlistCount > 0 ? (
+                  <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                    {wishlistCount > 9 ? "9+" : wishlistCount}
+                  </span>
+                ) : null}
+              </Link>
+            )}
+            {isAdmin ? null : (
+              <button type="button" aria-label="Bag" onClick={showCart} className="relative">
+                <FiShoppingBag className="w-5 h-5 xl:w-7 xl:h-7 text-gray-700" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#BF8D2F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {isLoggedIn ? (
               <Link href="/profile" aria-label="Account" className="cursor-pointer">
@@ -159,7 +171,7 @@ const Navbar = () => {
           {/* Mobile Drawer Button */}
           <Button
             type="text"
-            className="md:hidden"
+            className="lg:hidden"
             icon={<MenuOutlined />}
             onClick={showDrawer}
           />
@@ -180,6 +192,32 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 flex items-center gap-4">
+            <Link href="/searchresult" aria-label="Search" onClick={closeDrawer}>
+              <FiSearch className="w-6 h-6 text-gray-700" />
+            </Link>
+            {isAdmin ? null : (
+              <Link href="/mywishlist" aria-label="Wishlist" onClick={closeDrawer} className="relative">
+                <FiHeart className="w-6 h-6 text-gray-700" />
+              </Link>
+            )}
+            {isAdmin ? null : (
+              <button
+                type="button"
+                aria-label="Bag"
+                onClick={() => {
+                  closeDrawer();
+                  showCart();
+                }}
+              >
+                <FiShoppingBag className="w-6 h-6 text-gray-700" />
+              </button>
+            )}
+            <Link href={isLoggedIn ? "/profile" : "/login"} aria-label="Account" onClick={closeDrawer}>
+              <FiUser className="w-6 h-6 text-gray-700" />
+            </Link>
+          </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-700 mt-4">
             <FiPhone className="w-5 h-5" />
@@ -217,13 +255,14 @@ const Navbar = () => {
           </div>
         </Drawer>
 
-        {/* Cart Drawer - now a separate component */}
-        <CartDrawer
-          open={isCartOpen}
-          onClose={closeCart}
-          cartItems={cartItems}
-          onUpdateQty={updateQty}
-        />
+        {isAdmin ? null : (
+          <CartDrawer
+            open={isCartOpen}
+            onClose={closeCart}
+            cartItems={cartItems}
+            onUpdateQty={updateQty}
+          />
+        )}
       </div>
     </nav>
   );

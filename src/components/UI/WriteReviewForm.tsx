@@ -9,7 +9,19 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser, selectToken } from "@/redux/features/auth/authSlice";
 import { isAdminRole } from "@/utils/role";
 
-const WriteReviewForm = ({ compact = false }: { compact?: boolean }) => {
+type WriteReviewFormProps = {
+  compact?: boolean;
+  productId?: string;
+  productName?: string;
+  onSuccess?: () => void;
+};
+
+const WriteReviewForm = ({
+  compact = false,
+  productId,
+  productName,
+  onSuccess,
+}: WriteReviewFormProps) => {
   const token = useAppSelector(selectToken);
   const user = useAppSelector(selectCurrentUser);
   const { data: profileData } = useGetProfileQuery({}, { skip: !token || isAdminRole(user?.role) });
@@ -32,14 +44,18 @@ const WriteReviewForm = ({ compact = false }: { compact?: boolean }) => {
         text: text.trim(),
         rating,
         tag: "Verified Buyer",
+        ...(productId ? { productId } : {}),
       }).unwrap();
       setText("");
       setRating(5);
-      Swal.fire({
+      await Swal.fire({
         title: "Thank you",
-        text: "Your review is now live on the homepage.",
+        text: productName
+          ? `Your review for ${productName} is saved.`
+          : "Your review is now live on the homepage.",
         icon: "success",
       });
+      onSuccess?.();
     } catch (error: unknown) {
       const message =
         (error as { data?: { message?: string } })?.data?.message ||
@@ -55,9 +71,13 @@ const WriteReviewForm = ({ compact = false }: { compact?: boolean }) => {
       onSubmit={handleSubmit}
       className={`rounded-md border border-[#EDEDED] bg-white ${compact ? "p-5" : "px-5 py-6"}`}
     >
-      <p className="mb-3 text-sm font-semibold text-[#1A1A1A]">Write a review</p>
+      <p className="mb-3 text-sm font-semibold text-[#1A1A1A]">
+        {productName ? `Review ${productName}` : "Write a review"}
+      </p>
       <p className="mb-4 text-xs text-gray-500">
-        Share your experience after your order. It will appear on the homepage carousel.
+        {productId
+          ? "Rate this product from your order. Your rating appears on the product details."
+          : "Share your experience after your order. It will appear on the homepage carousel."}
       </p>
       <div className="mb-4 flex items-center gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -91,7 +111,7 @@ const WriteReviewForm = ({ compact = false }: { compact?: boolean }) => {
         required
         minLength={10}
         rows={3}
-        placeholder="How was your order?"
+        placeholder="How was this product?"
         className="mb-3 w-full rounded-sm border border-neutral-300 px-4 py-2.5 text-sm outline-none focus:border-[#BF8D2F]"
       />
       <button

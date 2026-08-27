@@ -71,10 +71,14 @@ const Sidebar = () => {
         text: "Profile photo updated successfully.",
         icon: "success",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error && typeof error === "object" && "data" in error
+          ? (error as { data?: { message?: string } }).data?.message
+          : undefined;
       Swal.fire({
         title: "Error",
-        text: error?.data?.message || "Failed to update profile photo.",
+        text: message || "Failed to update profile photo.",
         icon: "error",
       });
     }

@@ -2,7 +2,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Form, Input, Spin } from "antd";
-import Image from "next/image";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import {
@@ -189,14 +188,14 @@ const Page = () => {
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
               className="rounded-[3px] border border-red-300 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-red-600 hover:bg-red-50 disabled:opacity-60"
             >
               {isDeleting ? "Deleting..." : "Delete Account"}
-            </button>
+            </button> */}
           </div>
         </Form>
       </div>
