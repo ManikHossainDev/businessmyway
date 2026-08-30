@@ -52,10 +52,12 @@ const AccountVerify: React.FC = () => {
       }).unwrap();
 
       if (response?.statusCode === 200) {
-        Swal.fire({
-          title: "Verify success",
-          text: response?.message || "Email verified. Wait for admin approval before logging in.",
+        await Swal.fire({
+          title: "Email Verified!",
+          text: response?.message || "Email verified successfully. Your account is pending admin verification before you can log in.",
           icon: "success",
+          confirmButtonColor: "#C1892F",
+          confirmButtonText: "Go to Login",
         });
         router.push("/login");
       }

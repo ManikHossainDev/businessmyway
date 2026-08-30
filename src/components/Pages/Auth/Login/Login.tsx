@@ -61,11 +61,39 @@ const Login: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Login Error: ", error);
-      Swal.fire({
-                title: "Some Thing wrong",
-                text: `${error?.data?.message}`,
-                icon: "error",
-              });
+      const errorCode = error?.data?.errorCode;
+      const errorMessage =
+        error?.data?.message || "Something went wrong during login.";
+
+      if (errorCode === "ACCOUNT_UNDER_REVIEW") {
+        Swal.fire({
+          title: "Pending Verification",
+          text: errorMessage,
+          icon: "warning",
+          confirmButtonColor: "#C1892F",
+        });
+      } else if (errorCode === "EMAIL_NOT_VERIFIED") {
+        Swal.fire({
+          title: "Email Not Verified",
+          text: errorMessage,
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#C1892F",
+          confirmButtonText: "Verify Email",
+          cancelButtonText: "Close",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Login Failed",
+          text: errorMessage,
+          icon: "error",
+          confirmButtonColor: "#C1892F",
+        });
+      }
     }
   };
 

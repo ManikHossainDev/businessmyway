@@ -65,12 +65,14 @@ const Register: React.FC = () => {
     try {
       const res = await register(formData).unwrap();
       if (res?.statusCode === 201) {
-        router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
-        Swal.fire({
-          title: "Registration successful!",
-          text: "Please verify your email. An admin will review your ID before you can log in.",
+        await Swal.fire({
+          title: "Registration Successful!",
+          text: "Please enter the OTP sent to your email. After OTP verification, an admin will review your document before your account is approved for login.",
           icon: "success",
+          confirmButtonColor: "#C1892F",
+          confirmButtonText: "Verify Email",
         });
+        router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
       }
     } catch (error: any) {
       console.error("Registration Error: ", error);
