@@ -5,7 +5,6 @@ import { Form, Input, Modal } from "antd";
 import Swal from "sweetalert2";
 import { LockOutlined } from "@ant-design/icons";
 import ProductPhoto from "@/components/UI/ProductPhoto";
-import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { isAdminRole } from "@/utils/role";
@@ -22,14 +21,11 @@ type CartItem = {
   qty: number;
 };
 
-type DeliveryType = "in_delivery" | "paid_delivery";
-
 type CheckoutFormValues = {
   name: string;
   phone: string;
   email: string;
   location: string;
-  deliveryType: DeliveryType;
 };
 
 type CheckoutModalProps = {
@@ -39,7 +35,6 @@ type CheckoutModalProps = {
   onCartCleared?: () => void;
 };
 
-const IN_DELIVERY_FEE = 10;
 const PAID_DELIVERY_FEE = 4.99;
 
 const formatDefaultLocation = (profile?: {
@@ -59,31 +54,7 @@ const formatDefaultLocation = (profile?: {
     .join(", ");
 };
 
-const DeliveryOption = ({
-  selected,
-  title,
-  hint,
-  onClick,
-}: {
-  selected: boolean;
-  title: string;
-  hint: string;
-  onClick: () => void;
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className={`flex-1 rounded-md border px-3 py-3 text-left transition ${
-      selected ? "border-[#BF8D2F] bg-[#FBF6EC]" : "border-[#E5E5E5] bg-white hover:border-[#BF8D2F]"
-    }`}
-  >
-    <p className="text-sm font-semibold text-[#1A1A1A]">{title}</p>
-    <p className="mt-1 text-xs text-gray-500">{hint}</p>
-  </button>
-);
-
 const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModalProps) => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const isAdmin = isAdminRole(useAppSelector(selectCurrentUser)?.role);
   const [form] = Form.useForm<CheckoutFormValues>();
@@ -91,15 +62,13 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
   const [checkoutOrder, { isLoading }] = useCheckoutOrderMutation();
   const [clearCart] = useClearCartMutation();
   const profile = profileData?.data;
-  const deliveryType = Form.useWatch("deliveryType", form) || "in_delivery";
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const deliveryFee = deliveryType === "paid_delivery" ? PAID_DELIVERY_FEE : IN_DELIVERY_FEE;
+  const deliveryFee = PAID_DELIVERY_FEE;
   const total = subtotal + deliveryFee;
 
   useEffect(() => {
     if (!open) return;
     form.setFieldsValue({
-      deliveryType: form.getFieldValue("deliveryType") || "in_delivery",
       name: profile?.name || form.getFieldValue("name") || "",
       phone: profile?.phone || form.getFieldValue("phone") || "",
       email: profile?.email || form.getFieldValue("email") || "",
@@ -129,6 +98,7 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
       const values = await form.validateFields();
       const result = await checkoutOrder({
         ...values,
+        deliveryType: "paid_delivery",
         origin: window.location.origin,
       }).unwrap();
       emptyCartUi();
@@ -136,11 +106,6 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
         await clearCart().unwrap();
       } catch {
         dispatch(baseApi.util.invalidateTags(["cart"]));
-      }
-      if (result.data?.direct && result.data.orderId) {
-        onClose();
-        router.push("/orderhistory?review=1");
-        return;
       }
       if (result.data?.url) {
         onClose();
@@ -176,14 +141,12 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
           Delivery details
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          {deliveryType === "paid_delivery"
-            ? "Confirm your information, then pay securely with Stripe."
-            : "Confirm your information and place a direct Case In Delivery order."}
+          Confirm your information, then pay securely with Stripe.
         </p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
-        <Form form={form} layout="vertical" requiredMark={false} initialValues={{ deliveryType: "in_delivery" }}>
+        <Form form={form} layout="vertical" requiredMark={false}>
           <Form.Item
             label="Full name"
             name="name"
@@ -218,26 +181,6 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
               placeholder="House number, area, location, postcode"
             />
           </Form.Item>
-          <Form.Item
-            label="Delivery option"
-            name="deliveryType"
-            rules={[{ required: true, message: "Choose a delivery option" }]}
-          >
-            <div className="flex gap-3">
-              <DeliveryOption
-                selected={deliveryType === "in_delivery"}
-                title="Case In Delivery"
-                hint={`Direct order · £${IN_DELIVERY_FEE.toFixed(2)}`}
-                onClick={() => form.setFieldValue("deliveryType", "in_delivery")}
-              />
-              <DeliveryOption
-                selected={deliveryType === "paid_delivery"}
-                title="Paid Delivery"
-                hint={`Courier delivery · £${PAID_DELIVERY_FEE.toFixed(2)}`}
-                onClick={() => form.setFieldValue("deliveryType", "paid_delivery")}
-              />
-            </div>
-          </Form.Item>
         </Form>
 
         <div className="rounded-md border border-[#EDEDED] bg-[#FAFAF8] p-5">
@@ -266,8 +209,8 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
               <span>£{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-[#1A1A1A]">
-              <span>{deliveryType === "paid_delivery" ? "Paid Delivery" : "Case In Delivery"}</span>
-              <span>{deliveryFee ? `£${deliveryFee.toFixed(2)}` : "Included"}</span>
+              <span>Paid Delivery</span>
+              <span>£{deliveryFee.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between pt-1">
               <span className="font-semibold text-[#1A1A1A]">Total</span>
@@ -280,19 +223,11 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
             disabled={isLoading || isFetching || cartItems.length === 0}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm bg-[#BF8D2F] py-3.5 font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
           >
-            {deliveryType === "paid_delivery" ? <LockOutlined /> : null}
-            {isLoading
-              ? deliveryType === "paid_delivery"
-                ? "Redirecting to Stripe..."
-                : "Placing order..."
-              : deliveryType === "paid_delivery"
-                ? "Pay securely with Stripe"
-                : "Place direct order"}
+            <LockOutlined />
+            {isLoading ? "Redirecting to Stripe..." : "Pay securely with Stripe"}
           </button>
           <p className="mt-3 text-center text-xs text-gray-400">
-            {deliveryType === "paid_delivery"
-              ? "You will be redirected to Stripe to complete payment."
-              : "This order is placed directly. Pay £10 delivery with the order."}
+            You will be redirected to Stripe to complete payment.
           </p>
         </div>
       </div>

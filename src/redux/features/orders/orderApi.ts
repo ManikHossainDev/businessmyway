@@ -36,7 +36,7 @@ type CheckoutPayload = {
   phone: string;
   email: string;
   location: string;
-  deliveryType: "in_delivery" | "paid_delivery";
+  deliveryType?: "paid_delivery";
   origin: string;
 };
 

@@ -110,7 +110,7 @@ const Login: React.FC = () => {
           Welcome <span className="text-[#C1752C]">back</span>
         </h1>
         <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
-          Sign in to your Noir &amp; Co. account
+          Sign in to your British Smokes
         </p>
 
         <Form layout="vertical" onFinish={onFinish} requiredMark={false}>

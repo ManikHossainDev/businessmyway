@@ -54,7 +54,7 @@ const AccountVerify: React.FC = () => {
       if (response?.statusCode === 200) {
         Swal.fire({
           title: "Verify success",
-          text: response?.message || "Account verify successful",
+          text: response?.message || "Email verified. Wait for admin approval before logging in.",
           icon: "success",
         });
         router.push("/login");

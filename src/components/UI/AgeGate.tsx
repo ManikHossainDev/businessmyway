@@ -5,7 +5,7 @@ import { FaBan } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import logo from "@/assets/logo/logo.png";
 import Rectangle from "@/assets/home/Rectangle.gif";
-import GifRevealWrapper from "./GifRevealWrapper";
+// import GifRevealWrapper from "./GifRevealWrapper";
 import Link from "next/link";
 import Image from "next/image";
 import { getFromCookies, setToCookies } from "@/utils/cookies-storage";
@@ -31,7 +31,7 @@ const AgeGate = ({ children }: AgeGateProps) => {
   const handleConfirm = () => {
     setToCookies(AGE_COOKIE_KEY, "true");
     setShowGate(false);
-    route.push("/login");
+    route.push("/");
   };
 
   const handleDeny = () => {
@@ -145,7 +145,7 @@ const AgeGate = ({ children }: AgeGateProps) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <GifRevealWrapper borderSize={3}>
+                  {/* <GifRevealWrapper borderSize={3}> */}
                     <button
                       type="button"
                       onClick={handleConfirm}
@@ -153,8 +153,8 @@ const AgeGate = ({ children }: AgeGateProps) => {
                     >
                       I am 18 or older
                     </button>
-                  </GifRevealWrapper>
-                  <GifRevealWrapper borderSize={3}>
+                  {/* </GifRevealWrapper> */}
+                  {/* <GifRevealWrapper borderSize={3}> */}
                     <button
                       type="button"
                       onClick={handleDeny}
@@ -162,7 +162,7 @@ const AgeGate = ({ children }: AgeGateProps) => {
                     >
                       I am under 18
                     </button>
-                  </GifRevealWrapper>
+                  {/* </GifRevealWrapper> */}
                 </div>
               </div>
             </div>

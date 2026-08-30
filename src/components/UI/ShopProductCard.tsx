@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import GifRevealWrapperCard from "@/components/UI/GifRevealWrapperCard";
-import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+// import GifRevealWrapperCard from "@/components/UI/GifRevealWrapperCard";
+// import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
 import ProductPhoto from "@/components/UI/ProductPhoto";
 import WishlistHeartButton from "@/components/UI/WishlistHeartButton";
 import AddToCartButton from "@/components/UI/AddToCartButton";
@@ -31,7 +31,9 @@ const ShopProductCard = ({
 
   return (
     <>
+      {/* Hover background GIF disabled for all product cards
       <GifRevealWrapperCard borderSize={5} className="h-full w-full">
+      */}
         <article
           role="button"
           tabIndex={0}
@@ -78,16 +80,19 @@ const ShopProductCard = ({
                              transition-all duration-300 ease-out delay-75
                              group-hover/card:pointer-events-auto group-hover/card:translate-y-0 group-hover/card:opacity-100"
                 >
+                  {/* Hover GIF disabled on add-to-cart button
                   <GifRevealWrapper borderSize={4} className="flex-1">
                     <AddToCartButton productId={product.id} />
                   </GifRevealWrapper>
+                  */}
+                  <AddToCartButton productId={product.id} />
                   <WishlistHeartButton productId={product.id} />
                 </div>
               )}
             </div>
           </div>
         </article>
-      </GifRevealWrapperCard>
+      {/* </GifRevealWrapperCard> */}
 
       <ProductDetailModal open={open} product={product} onClose={() => setOpen(false)} />
     </>

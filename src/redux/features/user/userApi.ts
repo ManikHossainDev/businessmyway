@@ -9,9 +9,14 @@ export type AdminUser = {
   phone?: string;
   countryCode?: string;
   avatar?: string;
+  identityDocument?: string;
+  identityDocumentType?: "nid" | "driving_license";
   role?: string;
   status?: string;
+  onboardingStep?: string;
+  isOnboardingCompleted?: boolean;
   isEmailVerified?: boolean;
+  dateOfBirth?: string;
   createdAt?: string;
 };
 
@@ -37,6 +42,12 @@ type AdminUserListResponse = {
   meta?: PaginationMeta;
 };
 
+type AdminUserMutationResponse = {
+  success: boolean;
+  message?: string;
+  data: AdminUser;
+};
+
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAdminUsers: builder.query<AdminUserListResponse, AdminUserListParams | void>({
@@ -50,7 +61,14 @@ const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ["user"],
     }),
+    approveAdminUser: builder.mutation<AdminUserMutationResponse, string>({
+      query: (id) => ({
+        url: `/admin/users/${id}/approve`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["user"],
+    }),
   }),
 });
 
-export const { useGetAdminUsersQuery } = userApi;
+export const { useGetAdminUsersQuery, useApproveAdminUserMutation } = userApi;

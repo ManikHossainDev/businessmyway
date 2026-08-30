@@ -21,12 +21,14 @@ interface RegisterFormValues {
   email: string;
   phone: string;
   dateOfBirth: string;
+  identityDocumentType: "nid" | "driving_license";
   agreeTermsAndConditions: boolean;
 }
 
 const Register: React.FC = () => {
   const router = useRouter();
   const [register, { isLoading }] = useRegisterMutation();
+  const [identityFile, setIdentityFile] = useState<File | null>(null);
 
   // Initial page loading
   const [pageLoading, setPageLoading] = useState(true);
@@ -40,23 +42,33 @@ const Register: React.FC = () => {
   }, []);
 
   const onFinish = async (values: RegisterFormValues) => {
-    const registrationData = {
-      name: `${values.firstName} ${values.lastName}`,
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.password,
-      phone: values.phone,
-      dateOfBirth: values.dateOfBirth,
-      agreeTermsAndConditions: values.agreeTermsAndConditions,
-    };
+    if (!identityFile) {
+      Swal.fire({
+        title: "ID document required",
+        text: "Please upload your NID or driving license.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", `${values.firstName} ${values.lastName}`.trim());
+    formData.append("email", values.email);
+    formData.append("password", values.password);
+    formData.append("confirmPassword", values.password);
+    formData.append("phone", values.phone);
+    formData.append("dateOfBirth", values.dateOfBirth);
+    formData.append("agreeTermsAndConditions", String(values.agreeTermsAndConditions));
+    formData.append("identityDocumentType", values.identityDocumentType);
+    formData.append("identityDocument", identityFile);
 
     try {
-      const res = await register(registrationData).unwrap();
+      const res = await register(formData).unwrap();
       if (res?.statusCode === 201) {
         router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
         Swal.fire({
           title: "Registration successful!",
-          text: "Please check your email for verification.",
+          text: "Please verify your email. An admin will review your ID before you can log in.",
           icon: "success",
         });
       }
@@ -132,7 +144,7 @@ const Register: React.FC = () => {
         </h1>
 
         <p className="text-center text-sm sm:text-xl text-[#8F887A] mb-6 sm:mb-7">
-          Join Noir &amp; Co. for exclusive access
+          Join British Smokes for exclusive access
         </p>
 
         {/* Registration Form */}
@@ -316,6 +328,48 @@ const Register: React.FC = () => {
               placeholder="Date of Birth"
               className="!w-full !border !border-[#737373] !text-[#1A1A1A] placeholder:!text-[#B3ACA0] !text-sm sm:!text-xl !rounded-[3px] !py-2"
             />
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                ID Document Type
+              </span>
+            }
+            name="identityDocumentType"
+            initialValue="nid"
+            rules={[
+              {
+                required: true,
+                message: "Please select your ID document type",
+              },
+            ]}
+            className="mb-3.5"
+          >
+            <select className="w-full border border-[#737373] text-[#1A1A1A] text-sm sm:text-xl rounded-[3px] py-2.5 px-3 bg-white">
+              <option value="nid">National ID (NID)</option>
+              <option value="driving_license">Driving License</option>
+            </select>
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <span className="text-sm sm:text-xl font-medium text-[#1A1A1A]">
+                NID / Driving License
+              </span>
+            }
+            required
+            className="mb-5"
+          >
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={(event) => setIdentityFile(event.target.files?.[0] || null)}
+              className="w-full border border-[#737373] rounded-[3px] py-2 px-3 text-sm sm:text-base text-[#1A1A1A] bg-white file:mr-3 file:rounded file:border-0 file:bg-[#C1892F] file:px-3 file:py-1.5 file:text-white"
+            />
+            <p className="mt-1 text-xs sm:text-sm text-[#8F887A]">
+              Upload one file: NID or driving license (image or PDF).
+            </p>
           </Form.Item>
 
           {/* Terms & Conditions / Privacy Policy */}

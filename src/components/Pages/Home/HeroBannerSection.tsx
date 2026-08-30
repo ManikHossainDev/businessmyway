@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import herosection from "@/assets/home/herosection.png";
-import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+// import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
 
 const HeroBannerSection = () => {
   return (
@@ -44,24 +44,24 @@ const HeroBannerSection = () => {
 
           <div className="mt-2 md:mt-4 lg:mt-8 flex flex-row gap-[10px]">
             <Link href="/searchresult">
-              <GifRevealWrapper borderSize={3}>
+              {/* <GifRevealWrapper borderSize={3}> */}
                 <button
                   type="button"
                   className="flex h-[40px] w-[200px] items-center justify-center rounded-sm bg-[#BF8D2F] px-2 text-white font-medium transition-colors hover:bg-[#a97922] md:h-[56px] md:w-[180px] lg:h-[56px] lg:w-[200px] lg:px-[10px] lg:py-[10px] xl:w-[316px]"
                 >
                   Explore Collection
                 </button>
-              </GifRevealWrapper>
+              {/* </GifRevealWrapper> */}
             </Link>
             <Link href="/about-us">
-              <GifRevealWrapper borderSize={3}>
+              {/* <GifRevealWrapper borderSize={3}> */}
                 <button
                   type="button"
                   className="flex h-[40px] w-[200px] items-center justify-center rounded-sm border border-black bg-white px-2 text-black font-medium transition-colors hover:bg-[#eeecec] md:h-[56px] md:w-[180px] lg:h-[56px] lg:w-[200px] lg:px-[10px] lg:py-[10px] xl:w-[316px]"
                 >
                   Our Story
                 </button>
-              </GifRevealWrapper>
+              {/* </GifRevealWrapper> */}
             </Link>
           </div>
         </div>

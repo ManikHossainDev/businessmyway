@@ -66,11 +66,12 @@ const AdminHeader = ({ onMenuClick, collapsed, onToggleCollapse }: AdminHeaderPr
   const unreadCount = unreadData?.data?.count ?? notifications.filter((item) => !item.isRead).length;
 
   const openNotification = async (id: string) => {
-    if (!notifications.find((item) => item.id === id)?.isRead) {
+    const item = notifications.find((notification) => notification.id === id);
+    if (item && !item.isRead) {
       await markNotificationRead(id);
     }
     setNotificationOpen(false);
-    router.push("/orders");
+    router.push(item?.type === "admin_new_user" ? "/admin-users" : "/orders");
   };
 
   return (

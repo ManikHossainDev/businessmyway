@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ConfigProvider, Form, Input, Modal, Select, Spin, Switch } from "antd";
 import Swal from "sweetalert2";
-import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+// import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
 import {
   useAddAddressMutation,
   useGetProfileQuery,
@@ -177,7 +177,7 @@ const Page = () => {
           <span className="text-[#1f2a44]">Personal </span>
           <span className="text-[#c98a3e]">Details</span>
         </h1>
-        <GifRevealWrapper borderSize={3}>
+        {/* <GifRevealWrapper borderSize={3}> */}
           <button
             type="button"
             onClick={openAddModal}
@@ -185,7 +185,7 @@ const Page = () => {
           >
             Add New Address
           </button>
-        </GifRevealWrapper>
+        {/* </GifRevealWrapper> */}
       </div>
 
       {isLoading ? (

@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 import ProductPhoto from "@/components/UI/ProductPhoto";
 import AddToCartButton from "@/components/UI/AddToCartButton";
 import WishlistHeartButton from "@/components/UI/WishlistHeartButton";
-import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
+// import GifRevealWrapper from "@/components/UI/GifRevealWrapper";
 import type { Product } from "@/redux/features/products/productApi";
 import { getAttributeFields } from "@/constants/productAttributes";
 import { useGetProductReviewsQuery } from "@/redux/features/reviews/reviewApi";
@@ -269,6 +269,7 @@ const ProductDetailModal = ({ open, product, onClose }: ProductDetailModalProps)
           {isAdmin ? null : (
             <div className="border-t border-neutral-200 bg-white px-6 py-5 md:px-9">
               <div className="flex items-center gap-3">
+                {/* Hover GIF disabled on add-to-cart button
                 <GifRevealWrapper borderSize={3} className="flex-1">
                   <AddToCartButton
                     productId={product.id}
@@ -278,6 +279,14 @@ const ProductDetailModal = ({ open, product, onClose }: ProductDetailModalProps)
                     className="flex h-12 w-full items-center justify-center rounded-sm bg-[#BF8D2F] px-4 text-[13px] font-semibold tracking-[0.04em] text-white transition-colors hover:bg-[#a67809] disabled:cursor-not-allowed disabled:opacity-55"
                   />
                 </GifRevealWrapper>
+                */}
+                <AddToCartButton
+                  productId={product.id}
+                  disabled={!inStock}
+                  label={inStock ? "Add to Cart" : "Unavailable"}
+                  onSuccess={onClose}
+                  className="flex h-12 w-full flex-1 items-center justify-center rounded-sm bg-[#BF8D2F] px-4 text-[13px] font-semibold tracking-[0.04em] text-white transition-colors hover:bg-[#a67809] disabled:cursor-not-allowed disabled:opacity-55"
+                />
                 <WishlistHeartButton
                   productId={product.id}
                   iconSize={20}
