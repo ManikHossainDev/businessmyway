@@ -1,5 +1,6 @@
 export const ADMIN_ROUTES = [
   "/admin-dashboard",
+  "/admin-messages",
   "/adminProfile",
   "/settings",
   "/orders",
@@ -28,7 +29,7 @@ export const USER_PRIVATE_ROUTES = [
   "/mywishlist",
 ];
 
-export const SHARED_PRIVATE_ROUTES = [];
+export const SHARED_PRIVATE_ROUTES = ["/message"];
 
 export const AUTH_ROUTES = [
   "/login",

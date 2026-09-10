@@ -72,7 +72,7 @@ const AdminReviewDetailModal = ({
       onCancel={onClose}
       footer={null}
       centered
-      destroyOnClose
+      destroyOnHidden
       width={520}
       title={null}
     >

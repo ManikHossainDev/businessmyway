@@ -29,7 +29,7 @@ const OrderDetailModal = ({ open, order, onClose, onReview }: OrderDetailModalPr
       onCancel={onClose}
       footer={null}
       centered
-      destroyOnClose
+      destroyOnHidden
       width={640}
       title={null}
     >

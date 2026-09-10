@@ -9,10 +9,10 @@ const filterData = {
     { label: 'Medium', count: 56 },
     { label: 'Full Strength', count: 56 },
   ],
-  Flavour: [
-    { label: 'Classic', count: 56 },
-    { label: 'Menthol', count: 56 },
-    { label: 'Vanilla', count: 56 },
+  'Cigarette Size': [
+    { label: 'King Size', count: 56 },
+    { label: 'Super King Size', count: 56 },
+    { label: 'Slims', count: 56 },
   ],
   Brand: [
     { label: 'Davidoff', count: 56 },

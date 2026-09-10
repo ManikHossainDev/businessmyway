@@ -72,8 +72,8 @@ const ProductDetailModal = ({ open, product, onClose }: ProductDetailModalProps)
       onCancel={onClose}
       footer={null}
       centered
-      width={900}
-      destroyOnClose
+      width={1000}
+      destroyOnHidden
       className="product-detail-modal"
       styles={{
         body: { padding: 0 },

@@ -1,9 +1,10 @@
-"use client";
 
+"use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ConfigProvider, Input, Modal, Pagination, Spin, Tooltip } from "antd";
 import Swal from "sweetalert2";
-import { FiUser, FiImage } from "react-icons/fi";
+import { FiUser, FiImage, FiMessageSquare } from "react-icons/fi";
 import { FaFilePdf } from "react-icons/fa";
 import {
   useApproveAdminUserMutation,
@@ -65,7 +66,7 @@ const isImage = (url?: string | null, mime?: string | null) =>
       (url && /\.(jpe?g|png|webp|gif|bmp|heic)($|\?)/i.test(url)),
   );
 
-const AdminUsersPage = () => {
+function AdminUsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -200,6 +201,7 @@ const AdminUsersPage = () => {
                 <th className="px-5 py-3">ID PDF</th>
                 <th className="px-5 py-3">OTP</th>
                 <th className="px-5 py-3">Approval</th>
+                <th className="px-5 py-3">Message</th>
                 <th className="px-5 py-3">Action</th>
               </tr>
             </thead>
@@ -276,7 +278,28 @@ const AdminUsersPage = () => {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      {!isAdmin && !approved ? (
+                      <Tooltip title={`Message ${user.name || "user"}`}>
+                        <Link
+                          href={`/admin-messages?userId=${user.id}`}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#E8E0D4] text-[#C1892F] hover:bg-[#F6F3EE] hover:border-[#C1892F] transition-colors"
+                          aria-label="Message user"
+                        >
+                          <FiMessageSquare size={17} />
+                        </Link>
+                      </Tooltip>
+                    </td>
+                    <td className="px-5 py-3">
+                      {isAdmin ? (
+                        <span className="text-xs text-[#8A8174]">Admin</span>
+                      ) : approved ? (
+                        <button
+                          type="button"
+                          disabled
+                          className="rounded-lg bg-[#C1892F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50"
+                        >
+                          approved
+                        </button>
+                      ) : (
                         <button
                           type="button"
                           disabled={isApproving}
@@ -285,8 +308,6 @@ const AdminUsersPage = () => {
                         >
                           Approve
                         </button>
-                      ) : (
-                        <span className="text-xs text-[#8A8174]">—</span>
                       )}
                     </td>
                   </tr>
@@ -316,7 +337,7 @@ const AdminUsersPage = () => {
         onCancel={() => setPreviewUser(null)}
         footer={null}
         centered
-        destroyOnClose
+        destroyOnHidden
         width={720}
         title={previewUser ? `${formatDocumentType(previewUser.identityDocumentType)} — ${previewUser.name}` : "ID Document"}
       >
@@ -390,6 +411,6 @@ const AdminUsersPage = () => {
       </Modal>
     </div>
   );
-};
+}
 
 export default AdminUsersPage;

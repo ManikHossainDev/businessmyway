@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
+import FloatingSupportChat from "@/components/UI/FloatingSupportChat";
 import React from "react";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
@@ -9,6 +10,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <Header />
       </div>
       {children}
+      <FloatingSupportChat />
       <Footer />
     </section>
   );

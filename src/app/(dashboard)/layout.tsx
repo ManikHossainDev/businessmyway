@@ -2,6 +2,7 @@ import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import AuthGuard from "@/components/Auth/AuthGuard";
+import FloatingSupportChat from "@/components/UI/FloatingSupportChat";
 import React from "react";
 
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
@@ -19,6 +20,7 @@ const Dashboard = ({ children }: { children: React.ReactNode }) => {
             <div className="col-span-11 md:col-span-9 lg:col-span-10">{children}</div>
           </div>
         </div>
+        <FloatingSupportChat />
         <Footer />
       </section>
     </AuthGuard>

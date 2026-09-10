@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FiBell, FiMenu, FiX } from "react-icons/fi";
+import { FiBell, FiMenu, FiX, FiMessageSquare } from "react-icons/fi";
 import { useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser, selectToken } from "@/redux/features/auth/authSlice";
 import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
@@ -99,6 +100,15 @@ const AdminHeader = ({ onMenuClick, collapsed, onToggleCollapse }: AdminHeaderPr
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin-messages"
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-[#5C564C] hover:bg-[#F6F3EE] transition-colors"
+              aria-label="Messages"
+              title="Customer Messages"
+            >
+              <FiMessageSquare size={24} />
+            </Link>
+
             <button
               type="button"
               onClick={() => setNotificationOpen(true)}

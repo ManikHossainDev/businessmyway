@@ -20,7 +20,7 @@ export interface Product {
   name: string;
   brand: "Davidoff" | "Marlboro" | "Dunhill";
   strength: "Ultra Light" | "Light" | "Medium" | "Full Strength";
-  flavour: "Classic" | "Menthol" | "Vanilla";
+  cigaretteSize: "King Size" | "Super King Size" | "Slims";
   packSize: "10 Pack" | "20 Pack" | "Carton x 10";
   price: number;
   image: string;

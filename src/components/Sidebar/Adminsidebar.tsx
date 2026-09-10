@@ -20,6 +20,7 @@ type AdminSidebarProps = {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: FiHome, href: "/admin-dashboard" },
+  { id: "messages", label: "Messages", icon: FiMessageSquare, href: "/admin-messages" },
   { id: "products", label: "Products", icon: FiBox, href: "/products" },
   { id: "users", label: "Users", icon: FiUser, href: "/admin-users" },
   { id: "orders", label: "Orders", icon: FiShoppingBag, href: "/orders" },
