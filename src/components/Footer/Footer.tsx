@@ -66,60 +66,60 @@ const Footer = () => {
   return (
     <section className="shadow-[0px_-13px_10px_0px_#00000010]">
       <footer className="px-2 xl:px-0 xl:container mx-auto  bg-white text-gray-900">
-      <div className="py-5 ">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-          {/* Brand / About */}
-          <div className="md:col-span-4">
-            <Link href="/" className="mb-4 inline-flex items-center">
-              <Image
-                src={logo}
-                width={360}
-                height={100}
-                quality={100}
-                alt="British Smokes"
-                className="h-12 w-auto max-w-[220px] object-contain object-left md:h-14 md:max-w-[260px] lg:h-16 lg:max-w-[300px]"
-              />
-            </Link>
-            <p className="text-[10px] md:text-[16px] lg:text-[18px] text-gray-500 leading-relaxed mb-5 max-w-xs">
-              Be the first to discover our latest arrivals, exclusive releases, and members-only offers. Thoughtfully curated updates, delivered to your inbox—never more than twice a month. No spam, ever.
-            </p>
-            <div className="flex items-center  gap-3">
-              {socialLinks.map(({ icon: Icon, href }, idx) => (
-                <Link
-                  key={idx}
-                  href={href}
-                  target="_blank"
-                  className="w-9 h-9 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  <Icon className="text-[10px] md:text-[16px] lg:text-[18px]" />
-                </Link>
-              ))}
+        <div className="py-5 ">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+            {/* Brand / About */}
+            <div className="md:col-span-4">
+              <Link href="/" className="mb-4 inline-flex items-center">
+                <Image
+                  src={logo}
+                  width={360}
+                  height={100}
+                  quality={100}
+                  alt="British Smokes"
+                  className="h-12 w-auto max-w-[220px] object-contain object-left md:h-14 md:max-w-[260px] lg:h-16 lg:max-w-[300px]"
+                />
+              </Link>
+              <p className="text-[10px] md:text-[16px] lg:text-[18px] text-gray-500 leading-relaxed mb-5 max-w-xs">
+                Be the first to discover our latest arrivals, exclusive releases, and members-only offers. Thoughtfully curated updates, delivered to your inbox—never more than twice a month. No spam, ever.
+              </p>
+              <div className="flex items-center  gap-3">
+                {socialLinks.map(({ icon: Icon, href }, idx) => (
+                  <Link
+                    key={idx}
+                    href={href}
+                    target="_blank"
+                    className="w-9 h-9 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <Icon className="text-[10px] md:text-[16px] lg:text-[18px]" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Link Columns */}
+            <div className="md:col-span-8 flex justify-between">
+              <FooterColumn title="Shop" links={shopLinks} />
+              <FooterColumn title="Brands" links={brandLinks} />
+              <FooterColumn title="Information" links={infoLinks} />
             </div>
           </div>
+        </div>
 
-          {/* Link Columns */}
-          <div className="md:col-span-8 flex justify-between">
-            <FooterColumn title="Shop" links={shopLinks} />
-            <FooterColumn title="Brands" links={brandLinks} />
-            <FooterColumn title="Information" links={infoLinks} />
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-200">
+          <div className=" py-5 flex flex-col lg:flex-row items-center justify-between gap-3">
+            <p className="text-[10px]  lg:text-[16px]  text-gray-500 text-center md:text-left">
+              © 2022 SMKR All rights reserved. Registered in England & Wales.
+            </p>
+            <p className="text-[10px] lg:text-[16px]  text-gray-500 text-center md:text-right flex items-center gap-1">
+              <span className="text-amber-500">⚠</span>
+              SMOKING KILLS Tobacco products are harmful to your health and
+              are addictive. For adults only. 18+ only.
+            </p>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-200">
-        <div className=" py-5 flex flex-col lg:flex-row items-center justify-between gap-3">
-          <p className="text-[10px]  lg:text-[16px]  text-gray-500 text-center md:text-left">
-            © 2022 SMKR All rights reserved. Registered in England & Wales.
-          </p>
-          <p className="text-[10px] lg:text-[16px]  text-gray-500 text-center md:text-right flex items-center gap-1">
-            <span className="text-amber-500">⚠</span>
-            SMOKING KILLS Tobacco products are harmful to your health and
-            are addictive. For adults only. 18+ only.
-          </p>
-        </div>
-      </div>
-    </footer>
+      </footer>
     </section>
   );
 };

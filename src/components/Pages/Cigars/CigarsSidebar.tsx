@@ -31,12 +31,6 @@ const wrapperColors = [
   { label: 'Maduro', count: 56 },
 ];
 
-const packSizes = [
-  { label: '10 Pack', count: 56 },
-  { label: '20 Pack', count: 56 },
-  { label: 'Carton x 10', count: 56 },
-];
-
 const CigarsSidebar = ({ filters, onFilterChange, onPriceChange, onApply, onReset }: any) => {
   const renderGroup = (title: string, items: { label: string; count: number }[]) => (
     <div key={title} className="mb-6">
@@ -95,8 +89,6 @@ const CigarsSidebar = ({ filters, onFilterChange, onPriceChange, onApply, onRese
           ))}
         </div>
       </div>
-
-      {renderGroup('Pack Size', packSizes)}
 
       {/* Price Range */}
       <div className="mb-6">

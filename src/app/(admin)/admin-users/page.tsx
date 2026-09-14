@@ -8,6 +8,7 @@ import { FiUser, FiImage, FiMessageSquare } from "react-icons/fi";
 import { FaFilePdf } from "react-icons/fa";
 import {
   useApproveAdminUserMutation,
+  useDeclineAdminUserMutation,
   useGetAdminUsersQuery,
   type AdminUser,
 } from "@/redux/features/user/userApi";
@@ -80,8 +81,11 @@ function AdminUsersPage() {
     search,
   });
   const [approveUser, { isLoading: isApproving }] = useApproveAdminUserMutation();
+  const [declineUser, { isLoading: isDeclining }] = useDeclineAdminUserMutation();
 
-  const users = data?.data || [];
+  const users = (data?.data || []).filter(
+    (user) => user.role?.toLowerCase() !== "superadmin",
+  );
   const total = data?.meta?.total ?? 0;
   const documentUrl = resolveMediaUrl(previewUser?.identityDocument);
   const previewAge = getAge(previewUser?.dateOfBirth);
@@ -130,16 +134,6 @@ function AdminUsersPage() {
   };
 
   const handleApprove = async (user: AdminUser) => {
-    const confirmed = await Swal.fire({
-      title: "Approve this account?",
-      text: `${user.name} will be able to log in after approval.`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#C1892F",
-      confirmButtonText: "Approve",
-    });
-    if (!confirmed.isConfirmed) return;
-
     try {
       const res = await approveUser(user.id).unwrap();
       setPreviewUser(null);
@@ -147,6 +141,8 @@ function AdminUsersPage() {
         title: "Approved",
         text: res.message || "This user can now log in.",
         icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
       });
     } catch (error) {
       const message =
@@ -156,6 +152,30 @@ function AdminUsersPage() {
       Swal.fire({
         title: "Error",
         text: message || "Failed to approve this user.",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleDecline = async (user: AdminUser) => {
+    try {
+      const res = await declineUser({ id: user.id }).unwrap();
+      setPreviewUser(null);
+      Swal.fire({
+        title: "Declined",
+        text: res.message || "This user account has been declined.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "data" in error
+          ? (error as { data?: { message?: string } }).data?.message
+          : undefined;
+      Swal.fire({
+        title: "Error",
+        text: message || "Failed to decline this user.",
         icon: "error",
       });
     }
@@ -294,20 +314,31 @@ function AdminUsersPage() {
                       ) : approved ? (
                         <button
                           type="button"
-                          disabled
-                          className="rounded-lg bg-[#C1892F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50"
+                          disabled={isApproving || isDeclining}
+                          onClick={() => handleDecline(user)}
+                          className="rounded-lg border border-[#FDA29B] bg-[#FEF3F2] px-3.5 py-1.5 text-xs font-semibold text-[#B42318] hover:bg-[#FEE4E2] disabled:opacity-50 transition-colors"
                         >
-                          approved
+                          Decline
                         </button>
                       ) : (
-                        <button
-                          type="button"
-                          disabled={isApproving}
-                          onClick={() => handleApprove(user)}
-                          className="rounded-lg bg-[#C1892F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50"
-                        >
-                          Approve
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={isApproving || isDeclining}
+                            onClick={() => handleDecline(user)}
+                            className="rounded-lg border border-[#FDA29B] bg-[#FEF3F2] px-3 py-1.5 text-xs font-semibold text-[#B42318] hover:bg-[#FEE4E2] disabled:opacity-50 transition-colors"
+                          >
+                            Decline
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isApproving || isDeclining}
+                            onClick={() => handleApprove(user)}
+                            className="rounded-lg bg-[#C1892F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50 transition-colors"
+                          >
+                            Approve
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -396,15 +427,38 @@ function AdminUsersPage() {
               <p className="py-10 text-center text-sm text-[#8A8174]">No document uploaded.</p>
             )}
 
-            {!isApproved(previewUser) && previewUser.role?.toLowerCase() !== "superadmin" ? (
-              <button
-                type="button"
-                disabled={isApproving}
-                onClick={() => handleApprove(previewUser)}
-                className="w-full rounded-lg bg-[#C1892F] py-2.5 text-sm font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50"
-              >
-                Approve account
-              </button>
+            {previewUser.role?.toLowerCase() !== "superadmin" ? (
+              <div className="pt-2">
+                {isApproved(previewUser) ? (
+                  <button
+                    type="button"
+                    disabled={isApproving || isDeclining}
+                    onClick={() => handleDecline(previewUser)}
+                    className="w-full rounded-lg border border-[#FDA29B] bg-[#FEF3F2] py-2.5 text-sm font-semibold text-[#B42318] hover:bg-[#FEE4E2] disabled:opacity-50 transition-colors"
+                  >
+                    Decline Account
+                  </button>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      disabled={isApproving || isDeclining}
+                      onClick={() => handleDecline(previewUser)}
+                      className="w-full rounded-lg border border-[#FDA29B] bg-[#FEF3F2] py-2.5 text-sm font-semibold text-[#B42318] hover:bg-[#FEE4E2] disabled:opacity-50 transition-colors"
+                    >
+                      Decline Account
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isApproving || isDeclining}
+                      onClick={() => handleApprove(previewUser)}
+                      className="w-full rounded-lg bg-[#C1892F] py-2.5 text-sm font-semibold text-white hover:bg-[#AD7A28] disabled:opacity-50 transition-colors"
+                    >
+                      Approve Account
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : null}
           </div>
         ) : null}

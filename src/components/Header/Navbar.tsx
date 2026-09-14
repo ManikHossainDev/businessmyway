@@ -4,7 +4,7 @@ import logo from "@/assets/logo/logo.png";
 import Image from "next/image";
 import ActiveLink from "./ActiveLink"; // Assuming this component works fine
 import Link from "next/link";
-import { Drawer, Button,  } from "antd";
+import { Drawer, Button, } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -85,7 +85,7 @@ const Navbar = () => {
 
   return (
     <nav className="border-b border-[#E5E5E5] shadow-[0px_4px_16px_0px_#00000026]">
-      <div className="xl:container mx-auto flex justify-between items-center py-3 px-2 xl:px-0">
+      <div className="xl:container mx-auto flex justify-between items-center py-2.5 px-2 xl:px-0">
         {/* Logo + Brand name */}
         <Link href="/" className="flex items-center shrink-0">
           <Image
@@ -100,7 +100,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <ul className="hidden lg:flex items-center gap-2 xl:gap-6">
+        <ul className="hidden lg:flex items-center gap-2 xl:gap-6 -mb-1">
           {navLink.map((link) => (
             <li key={link.href}>
               <ActiveLink href={link.href} label={link.label} />

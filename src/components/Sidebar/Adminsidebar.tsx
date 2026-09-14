@@ -52,9 +52,8 @@ const AdminSidebar = ({
   const renderNav = (compact: boolean) => (
     <>
       <div
-        className={`flex items-center border-b border-[#E8E0D4] ${
-          compact ? "justify-center px-3 py-5" : "gap-3 px-5 py-[9px]"
-        }`}
+        className={`flex items-center border-b border-[#E8E0D4] ${compact ? "justify-center px-3 py-5" : "gap-3 px-5 py-[9px]"
+          }`}
       >
         <Link
           href="/"
@@ -79,7 +78,7 @@ const AdminSidebar = ({
               ? pathname === item.href
               : item.href === "/settings"
                 ? pathname === "/settings" ||
-                  ADMIN_INFO_LINKS.some((link) => pathname === link.href)
+                ADMIN_INFO_LINKS.some((link) => pathname === link.href)
                 : pathname.startsWith(item.href);
 
           return (
@@ -88,13 +87,11 @@ const AdminSidebar = ({
               href={item.href}
               onClick={onClose}
               title={item.label}
-              className={`flex items-center rounded-xl py-1 transition-colors ${
-                compact ? "justify-center px-0 py-3" : "gap-3 px-3 py-2.5"
-              } ${
-                isActive
+              className={`flex items-center rounded-xl py-1 transition-colors ${compact ? "justify-center px-0 py-3" : "gap-3 px-3 py-2.5"
+                } ${isActive
                   ? "bg-[#BF8D2F] text-white shadow-sm"
                   : "text-[#5C564C] hover:bg-[#F3EBE0] hover:text-[#1A1A1A]"
-              }`}
+                }`}
             >
               <Icon size={20} className="shrink-0" />
               {!compact && <span className="text-sm font-medium">{item.label}</span>}
@@ -108,9 +105,8 @@ const AdminSidebar = ({
           type="button"
           onClick={showLogoutModal}
           title="Logout"
-          className={`w-full flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors ${
-            compact ? "justify-center" : "gap-3"
-          }`}
+          className={`w-full flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors ${compact ? "justify-center" : "gap-3"
+            }`}
         >
           <FiLogOut size={20} className="shrink-0" />
           {!compact && <span>Logout</span>}
@@ -122,9 +118,8 @@ const AdminSidebar = ({
   return (
     <>
       <aside
-        className={`hidden lg:flex flex-col fixed inset-y-0 left-0 z-40 bg-white border-r border-[#E8E0D4] transition-all duration-300 ${
-          collapsed ? "w-20" : "w-64"
-        }`}
+        className={`hidden lg:flex flex-col fixed inset-y-0 left-0 z-40 bg-white border-r border-[#E8E0D4] transition-all duration-300 ${collapsed ? "w-20" : "w-64"
+          }`}
       >
         {renderNav(collapsed)}
       </aside>

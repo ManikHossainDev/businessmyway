@@ -68,7 +68,23 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+    declineAdminUser: builder.mutation<AdminUserMutationResponse, { id: string; reason?: string } | string>({
+      query: (arg) => {
+        const id = typeof arg === "string" ? arg : arg.id;
+        const body = typeof arg === "string" ? undefined : { reason: arg.reason };
+        return {
+          url: `/admin/users/${id}/decline`,
+          method: "PATCH",
+          body,
+        };
+      },
+      invalidatesTags: ["user"],
+    }),
   }),
 });
 
-export const { useGetAdminUsersQuery, useApproveAdminUserMutation } = userApi;
+export const {
+  useGetAdminUsersQuery,
+  useApproveAdminUserMutation,
+  useDeclineAdminUserMutation,
+} = userApi;

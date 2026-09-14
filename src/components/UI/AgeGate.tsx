@@ -146,22 +146,22 @@ const AgeGate = ({ children }: AgeGateProps) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   {/* <GifRevealWrapper borderSize={3}> */}
-                    <button
-                      type="button"
-                      onClick={handleConfirm}
-                      className="w-full rounded-md bg-[#B8860B] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a67809]"
-                    >
-                      I am 18 or older
-                    </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirm}
+                    className="w-full rounded-md bg-[#B8860B] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a67809]"
+                  >
+                    I am 18 or older
+                  </button>
                   {/* </GifRevealWrapper> */}
                   {/* <GifRevealWrapper borderSize={3}> */}
-                    <button
-                      type="button"
-                      onClick={handleDeny}
-                      className="w-full rounded-md border border-neutral-300 bg-white py-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-50"
-                    >
-                      I am under 18
-                    </button>
+                  <button
+                    type="button"
+                    onClick={handleDeny}
+                    className="w-full rounded-md border border-neutral-300 bg-white py-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-50"
+                  >
+                    I am under 18
+                  </button>
                   {/* </GifRevealWrapper> */}
                 </div>
               </div>

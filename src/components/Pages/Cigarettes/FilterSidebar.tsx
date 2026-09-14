@@ -19,11 +19,6 @@ const filterData = {
     { label: 'Marlboro', count: 56 },
     { label: 'Dunhill', count: 56 },
   ],
-  'Pack Size': [
-    { label: '10 Pack', count: 56 },
-    { label: '20 Pack', count: 56 },
-    { label: 'Carton x 10', count: 56 },
-  ],
 };
 
 const FilterSidebar = ({ filters, onFilterChange, onPriceChange, onApply, onReset }: any) => {
