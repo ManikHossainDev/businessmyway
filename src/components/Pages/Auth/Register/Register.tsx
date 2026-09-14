@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Checkbox, Form, Spin } from "antd";
+import { Checkbox, Form, Spin, message } from "antd";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import InputComponent from "@/components/UI/InputComponent";
@@ -66,14 +66,8 @@ const Register: React.FC = () => {
 
     try {
       const res = await register(formData).unwrap();
-      if (res?.statusCode === 201) {
-        await Swal.fire({
-          title: "Registration Successful!",
-          text: "Please enter the OTP sent to your email. After OTP verification, an admin will review your document before your account is approved for login.",
-          icon: "success",
-          confirmButtonColor: "#C1892F",
-          confirmButtonText: "Verify Email",
-        });
+      if (res?.statusCode === 201 || res?.success) {
+        message.success("Registration Successful! Verification code sent to your email.");
         router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
       }
     } catch (error: any) {

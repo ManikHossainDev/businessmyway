@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Form, Input, Spin } from "antd";
+import { Form, Input, Spin, message } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MdOutlinePassword } from "react-icons/md";
 
@@ -51,15 +51,11 @@ const AccountVerify: React.FC = () => {
         otp: values.otp,
       }).unwrap();
 
-      if (response?.statusCode === 200) {
-        await Swal.fire({
-          title: "Email Verified!",
-          text: response?.message || "Email verified successfully. Your account is pending admin verification before you can log in.",
-          icon: "success",
-          confirmButtonColor: "#C1892F",
-          confirmButtonText: "Go to Login",
-        });
-        router.push("/login");
+      if (response?.statusCode === 200 || response?.success) {
+        message.success(response?.message || "Email verified successfully! Redirecting to login...");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1200);
       }
     } catch (error: any) {
       Swal.fire({

@@ -1,5 +1,5 @@
 "use client";
-
+import { CiDeliveryTruck } from "react-icons/ci";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,6 +28,7 @@ const menuItems = [
   { id: "brands", label: "Brands", icon: FiAward, href: "/admin-brands" },
   { id: "subscribers", label: "Subscribers", icon: FiMail, href: "/admin-subscribers" },
   { id: "reviews", label: "Reviews", icon: FiMessageSquare, href: "/admin-reviews" },
+  { id: "managedelivery", label: "Expenses", icon: CiDeliveryTruck, href: "/managedelivery" },
   { id: "settings", label: "Settings", icon: FiSettings, href: "/settings" },
 ];
 
