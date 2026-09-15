@@ -60,10 +60,15 @@ const Login: React.FC = () => {
         router.push(isAdminRole(res.data.user?.role) ? "/admin-dashboard" : "/");
       }
     } catch (error: any) {
-      console.error("Login Error: ", error);
+      if (error instanceof Error) {
+        console.error("Login Error (Error object): ", error.message, error.stack);
+      } else {
+        console.error("Login Error (API response): ", JSON.stringify(error, null, 2), error);
+      }
+
       const errorCode = error?.data?.errorCode;
       const errorMessage =
-        error?.data?.message || "Something went wrong during login.";
+        error?.data?.message || error?.error || error?.message || "Something went wrong during login.";
 
       if (errorCode === "ACCOUNT_UNDER_REVIEW") {
         Swal.fire({

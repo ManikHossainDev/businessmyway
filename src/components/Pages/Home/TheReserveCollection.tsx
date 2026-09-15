@@ -14,7 +14,6 @@ const TheReserveCollection = () => {
         priority
         quality={100}
         sizes="100vw"
-        placeholder="blur"
         className="object-fill -z-10"
       />
       <div className="relative xl:container px-2 xl:px-0 h-full flex flex-col justify-center">

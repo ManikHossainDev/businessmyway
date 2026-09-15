@@ -71,7 +71,12 @@ const Register: React.FC = () => {
         router.push(`/account-verify?email=${encodeURIComponent(values.email)}`);
       }
     } catch (error: any) {
-      console.error("Registration Error: ", error);
+      // Improved error logging to see the actual error in the console
+      if (error instanceof Error) {
+        console.error("Registration Error (Error object): ", error.message, error.stack);
+      } else {
+        console.error("Registration Error (API response): ", JSON.stringify(error, null, 2), error);
+      }
 
       const validationErrors = error?.data?.errors;
 
@@ -87,11 +92,15 @@ const Register: React.FC = () => {
           icon: "error",
         });
       } else {
+        const errorMsg =
+          error?.data?.message ||
+          error?.error ||
+          error?.message ||
+          "Something went wrong during registration";
+
         Swal.fire({
           title: "Oops!",
-          text:
-            error?.data?.message ||
-            "Something went wrong during registration",
+          text: errorMsg,
           icon: "error",
         });
       }
@@ -330,6 +339,11 @@ const Register: React.FC = () => {
                 NID / Driving License
               </span>
             }
+            extra={
+              <p className="mt-1 text-xs sm:text-sm text-[#8F887A]">
+                Upload one file: NID or driving license (image or PDF).
+              </p>
+            }
             valuePropName="file"
             getValueFromEvent={(e) => e?.target?.files?.[0]}
             getValueProps={() => ({})}
@@ -351,9 +365,6 @@ const Register: React.FC = () => {
               }}
               className="w-full border border-[#B3ACA0] rounded-[4px] py-2 px-3 text-sm sm:text-base text-[#1A1A1A] bg-white file:mr-3 file:rounded file:border-0 file:bg-[#C1892F] hover:file:bg-[#AD7A28] file:px-3 file:py-1.5 file:text-xs sm:file:text-sm file:font-medium file:text-white file:cursor-pointer cursor-pointer transition-colors"
             />
-            <p className="mt-1 text-xs sm:text-sm text-[#8F887A]">
-              Upload one file: NID or driving license (image or PDF).
-            </p>
           </Form.Item>
 
           {/* Terms & Conditions / Privacy Policy */}

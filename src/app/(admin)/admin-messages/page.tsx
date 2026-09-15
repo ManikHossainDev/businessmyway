@@ -194,22 +194,29 @@ function AdminMessagesContent() {
         setTimeout(() => scrollToBottom("smooth"), 30);
       }
 
-      // Update last message in conversation list
-      setConversations((prev) =>
-        prev.map((c) => {
-          if (c.id === msg.roomId) {
-            return {
-              ...c,
-              lastMessage: {
-                message: msg.message,
-                senderId: msg.sender.id,
-                sentAt: msg.sentAt || msg.createdAt,
-              },
-            };
-          }
-          return c;
-        }),
-      );
+      // Update last message in conversation list and move to top
+      setConversations((prev) => {
+        const idx = prev.findIndex((c) => c.id === msg.roomId);
+        if (idx === -1) return prev;
+
+        const isFromMe = msg.sender.id === (currentUser?.id || (currentUser as any)?._id);
+        const isCurrentlySelected = selectedConversation?.id === msg.roomId;
+
+        const updatedConv = {
+          ...prev[idx],
+          lastMessage: {
+            message: msg.message,
+            senderId: msg.sender.id,
+            sentAt: msg.sentAt || msg.createdAt,
+          },
+          hasUnread: (!isFromMe && !isCurrentlySelected) ? true : prev[idx].hasUnread,
+        };
+
+        const updated = [...prev];
+        updated.splice(idx, 1);
+        updated.unshift(updatedConv);
+        return updated;
+      });
     };
 
     const handlePresenceInitial = (data: { onlineUserIds: string[] }) => {
@@ -231,14 +238,26 @@ function AdminMessagesContent() {
       });
     };
 
+    const handleNewNotification = (data: any) => {
+      if (data?.type === "chat_message") {
+        startChat(undefined, activeToken).then((res) => {
+          if (res.ok && res.conversations) {
+            setConversations(res.conversations);
+          }
+        });
+      }
+    };
+
     socket.on("chat:message", handleNewMessage);
     socket.on("presence:initial" as any, handlePresenceInitial);
     socket.on("presence:update" as any, handlePresenceUpdate);
+    socket.on("notification:new", handleNewNotification);
 
     return () => {
       socket.off("chat:message", handleNewMessage);
       socket.off("presence:initial" as any, handlePresenceInitial);
       socket.off("presence:update" as any, handlePresenceUpdate);
+      socket.off("notification:new", handleNewNotification);
     };
   }, [selectedConversation, activeToken]);
 
@@ -384,10 +403,15 @@ function AdminMessagesContent() {
                     onClick={() => {
                       setSelectedConversation(c);
                       setMobileSidebarOpen(false);
+                      setConversations((prev) =>
+                        prev.map((conv) => (conv.id === c.id ? { ...conv, hasUnread: false } : conv))
+                      );
                     }}
                     className={`w-full p-3.5 text-left flex items-start gap-3 rounded-xl transition-all border ${
                       isSelected
                         ? "bg-white border-[#E8E0D4] shadow-sm font-medium"
+                        : c.hasUnread
+                        ? "bg-[#FDF9F1] border-[#C1892F]/30 shadow-sm"
                         : "border-transparent hover:bg-[#F6F3EE]"
                     }`}
                   >
@@ -421,16 +445,21 @@ function AdminMessagesContent() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <p className="text-xs font-semibold text-[#1A1A1A] truncate">
+                        <p className={`text-xs truncate ${c.hasUnread ? "font-bold text-[#C1892F]" : "font-semibold text-[#1A1A1A]"}`}>
                           {pDisplayName}
                         </p>
-                        {c.lastMessage?.sentAt && (
-                          <span className="text-[10px] text-[#8A8174] whitespace-nowrap">
-                            {formatTime(c.lastMessage.sentAt)}
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {c.hasUnread && (
+                            <span className="h-2 w-2 rounded-full bg-[#C1892F] animate-pulse"></span>
+                          )}
+                          {c.lastMessage?.sentAt && (
+                            <span className={`text-[10px] whitespace-nowrap ${c.hasUnread ? "text-[#C1892F] font-semibold" : "text-[#8A8174]"}`}>
+                              {formatTime(c.lastMessage.sentAt)}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-[11px] text-[#8A8174] truncate mt-1">
+                      <p className={`text-[11px] truncate mt-1 ${c.hasUnread ? "text-[#1A1A1A] font-medium" : "text-[#8A8174]"}`}>
                         {c.lastMessage?.message || "Start messaging..."}
                       </p>
                     </div>

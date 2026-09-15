@@ -194,14 +194,30 @@ export default function MessagePage() {
       });
     };
 
+    const handleNewNotification = (data: any) => {
+      if (data?.type === "chat_message") {
+        startChat(undefined, token).then((res) => {
+          if (isAdmin && res.ok && res.conversations) {
+            setConversations(res.conversations);
+          } else if (!isAdmin && res.ok && res.conversation) {
+            // Usually the customer only has one conversation.
+            // Just updating the selectedConversation's lastMessage is sufficient,
+            // but fetching it again keeps it perfectly in sync.
+          }
+        });
+      }
+    };
+
     socket.on("chat:message", handleNewMessage);
     socket.on("presence:initial" as any, handlePresenceInitial);
     socket.on("presence:update" as any, handlePresenceUpdate);
+    socket.on("notification:new", handleNewNotification);
 
     return () => {
       socket.off("chat:message", handleNewMessage);
       socket.off("presence:initial" as any, handlePresenceInitial);
       socket.off("presence:update" as any, handlePresenceUpdate);
+      socket.off("notification:new", handleNewNotification);
     };
   }, [selectedConversation, token, isAdmin]);
 

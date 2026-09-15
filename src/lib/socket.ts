@@ -21,6 +21,7 @@ export interface Conversation {
     senderId: string;
     sentAt: string;
   };
+  hasUnread?: boolean;
   createdAt: string;
   updatedAt: string;
 }

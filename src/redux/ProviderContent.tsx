@@ -3,6 +3,8 @@ import React, { ReactNode, useEffect } from "react";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
+import GlobalNotificationListener from "@/components/Notification/GlobalNotificationListener";
+
 const leftoverStorageKeys = ["persist:auth", "persist:auth-v2", "token", "user", "refreshToken"];
 
 const ProviderContent = ({ children }: { children: ReactNode }) => {
@@ -12,7 +14,12 @@ const ProviderContent = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  return <Provider store={store}>{children}</Provider>;
+  return (
+    <Provider store={store}>
+      <GlobalNotificationListener />
+      {children}
+    </Provider>
+  );
 };
 
 export default ProviderContent;
