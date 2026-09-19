@@ -3,11 +3,11 @@ import { useState } from "react";
 import { Drawer } from "antd";
 import { CloseOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import ProductPhoto from "@/components/UI/ProductPhoto";
-import CheckoutModal from "@/components/UI/CheckoutModal";
 import Swal from "sweetalert2";
 import { useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { isAdminRole } from "@/utils/role";
+import { useRouter } from "next/navigation";
 
 export type CartItem = {
   id: string;
@@ -26,8 +26,7 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) => {
   const isAdmin = isAdminRole(useAppSelector(selectCurrentUser)?.role);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
+  const router = useRouter();
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   const openCheckout = () => {
@@ -40,9 +39,8 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
       });
       return;
     }
-    setCheckoutItems(cartItems);
     onClose();
-    setCheckoutOpen(true);
+    router.push("/checkout");
   };
 
   return (
@@ -141,15 +139,6 @@ const CartDrawer = ({ open, onClose, cartItems, onUpdateQty }: CartDrawerProps) 
         </button>
       </div>
     </Drawer>
-      <CheckoutModal
-        open={checkoutOpen}
-        onClose={() => {
-          setCheckoutOpen(false);
-          setCheckoutItems([]);
-        }}
-        onCartCleared={() => setCheckoutItems([])}
-        cartItems={checkoutItems}
-      />
     </>
   );
 };

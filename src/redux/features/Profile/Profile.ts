@@ -3,23 +3,22 @@
 import { baseApi } from "@/redux/api/baseApi";
 
 export type SavedAddress = {
+  label: any;
   id: string;
-  label: string;
-  houseNumber: string;
-  area: string;
-  location: string;
+  firstName: string;
+  lastName: string;
+  company?: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  country: string;
+  province?: string;
   postcode?: string;
+  phone: string;
   isDefault: boolean;
 };
 
-export type SavedAddressPayload = {
-  label: string;
-  houseNumber: string;
-  area: string;
-  location: string;
-  postcode?: string;
-  isDefault?: boolean;
-};
+export type SavedAddressPayload = Omit<SavedAddress, 'id'>;
 
 type ProfileResponse = {
   success: boolean;
