@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Form, Input, Select, Checkbox, ConfigProvider } from "antd";
 import Swal from "sweetalert2";
-import { LockOutlined} from "@ant-design/icons";
+import { LockOutlined } from "@ant-design/icons";
 import ProductPhoto from "@/components/UI/ProductPhoto";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectCurrentUser, selectToken } from "@/redux/features/auth/authSlice";
@@ -28,6 +28,7 @@ type CheckoutFormValues = {
   email?: string;
   location?: string;
   address?: string;
+  apartment?: string; // ⭐ যুক্ত করা হয়েছে
   city?: string;
   province?: string;
   country?: string;
@@ -67,7 +68,8 @@ const CheckoutPage = () => {
 
   const [form] = Form.useForm<CheckoutFormValues>();
   const [selectedAddressMode, setSelectedAddressMode] = React.useState<string>("default");
-  const [selectedAddressData, setSelectedAddressData] = React.useState<any>(null); // ⭐ নতুন state
+  const [selectedAddressData, setSelectedAddressData] = React.useState<any>(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const [countryIso, setCountryIso] = React.useState<string>("");
   const [stateIso, setStateIso] = React.useState<string>("");
@@ -98,8 +100,7 @@ const CheckoutPage = () => {
   }, [countryIso, stateIso]);
 
   const { data: profileData, isFetching: isProfileFetching } = useGetProfileQuery(undefined, { skip: !token || isAdmin });
-  console.log('manik Hssain', profileData);
-
+  
   const [checkoutOrder, { isLoading }] = useCheckoutOrderMutation();
   const [clearCart] = useClearCartMutation();
 
@@ -130,6 +131,10 @@ const CheckoutPage = () => {
     }
   }, [token, isAdmin, router]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const addresses = profile?.savedAddresses || [];
   const defaultAddress = addresses.find((a: any) => a.isDefault) || addresses[0];
 
@@ -152,7 +157,7 @@ const CheckoutPage = () => {
     if (defaultAddress) {
       const defaultVal = defaultAddress._id || defaultAddress.id || "0";
       setSelectedAddressMode(defaultVal);
-      setSelectedAddressData(defaultAddress); // ⭐ সংরক্ষণ করো
+      setSelectedAddressData(defaultAddress); 
 
       const initialCountry = defaultAddress.country || "United Kingdom";
       const initialProvince = defaultAddress.province || "";
@@ -170,7 +175,8 @@ const CheckoutPage = () => {
         firstName: defaultAddress.firstName || profile?.name?.split(" ")[0] || "",
         lastName: defaultAddress.lastName || profile?.name?.split(" ").slice(1).join(" ") || "",
         phone: defaultAddress.phone || profile?.phone || "",
-        address: "",
+        address: [defaultAddress.country, defaultAddress.province, defaultAddress.city, defaultAddress.postcode].filter(Boolean).join(", ") || "",
+        apartment: defaultAddress.address2 || "", 
         city: defaultAddress.city || "",
         province: initialProvince,
         country: initialCountry,
@@ -181,7 +187,7 @@ const CheckoutPage = () => {
       });
     } else {
       setSelectedAddressMode("new");
-      setSelectedAddressData(null); // ⭐ রিসেট করো
+      setSelectedAddressData(null); 
       setCountryIso("");
       setStateIso("");
       form.setFieldsValue({
@@ -189,7 +195,8 @@ const CheckoutPage = () => {
         firstName: "",
         lastName: "",
         phone: "",
-        address: "",
+        address: "", 
+        apartment: "", 
         city: undefined,
         province: undefined,
         country: undefined,
@@ -224,7 +231,8 @@ const CheckoutPage = () => {
         name: profile?.name || "",
         email: profile?.email || "",
         location: "",
-        address: "",
+        address: "", 
+        apartment: "", 
         city: undefined,
         province: undefined,
         country: undefined,
@@ -234,7 +242,7 @@ const CheckoutPage = () => {
     } else {
       const selectedOpt = addressOptions.find((opt: any) => opt.value === value);
       if (selectedOpt && selectedOpt.data) {
-        setSelectedAddressData(selectedOpt.data); // ⭐ স্টোর করো
+        setSelectedAddressData(selectedOpt.data); 
 
         const c = selectedOpt.data.country || "United Kingdom";
         const p = selectedOpt.data.province || "";
@@ -250,7 +258,8 @@ const CheckoutPage = () => {
         form.setFieldsValue({
           firstName: selectedOpt.data.firstName || profile?.name?.split(" ")[0] || "",
           lastName: selectedOpt.data.lastName || profile?.name?.split(" ").slice(1).join(" ") || "",
-          address: "",
+          address: selectedOpt.data.address1 || "", // ⭐ আপডেট করা হয়েছে
+          apartment: selectedOpt.data.address2 || "", // ⭐ আপডেট করা হয়েছে
           city: selectedOpt.data.city || "",
           province: p,
           country: c,
@@ -262,8 +271,6 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceSelect = (place: any) => {
-    let streetNumber = "";
-    let route = "";
     let city = "";
     let province = "";
     let country = "";
@@ -271,12 +278,7 @@ const CheckoutPage = () => {
 
     place.address_components?.forEach((component: any) => {
       const types = component.types;
-      if (types.includes("street_number")) {
-        streetNumber = component.long_name;
-      }
-      if (types.includes("route")) {
-        route = component.long_name;
-      }
+      
       if (types.includes("locality") || types.includes("postal_town")) {
         city = component.long_name;
       }
@@ -291,7 +293,8 @@ const CheckoutPage = () => {
       }
     });
 
-    const address = `${streetNumber} ${route}`.trim() || place.name || "";
+    // ⭐ আপডেট করা হয়েছে: শুধুমাত্র শহর, প্রদেশ এবং জিপকোড কমা দিয়ে যুক্ত হবে
+    const address = [city, province, postcode].filter(Boolean).join(", ");
 
     const cIso = Country.getAllCountries().find(x => x.name === country)?.isoCode || "";
     setCountryIso(cIso);
@@ -303,7 +306,7 @@ const CheckoutPage = () => {
     }
 
     form.setFieldsValue({
-      address,
+      address, // মেইন অ্যাড্রেস ইনপুটে শহর, রাজ্য এবং জিপকোড বসবে
       city,
       province: province || undefined,
       country: country || undefined,
@@ -361,14 +364,14 @@ const CheckoutPage = () => {
     }
   };
 
+  if (!mounted) return null;
   if (!token || isAdmin) return null;
 
   return (
     <div className="w-full xl:container mx-auto px-4 py-8 mt-10 mb-5 ">
-
       <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
         <ConfigProvider theme={{ token: { colorPrimary: "#C1892F" } }}>
-          <Form form={form} layout="vertical" requiredMark={false} className="border-2 border-[#E5E5E5] p-5 rounded-md flex flex-col">
+          <Form form={form} layout="vertical" requiredMark={false} initialValues={{ address: "", apartment: "", firstName: "", lastName: "", phone: "" }} className="border-2 border-[#E5E5E5] p-5 rounded-md flex flex-col">
             <h2 className="mb-4 text-xl font-medium text-[#1A1A1A]">Shipping address</h2>
 
             <Form.Item label="Saved addresses" name="savedAddress" className="mb-4">
@@ -378,8 +381,6 @@ const CheckoutPage = () => {
                 onChange={handleAddressChange}
               />
             </Form.Item>
-
-           
 
             <div className="grid grid-cols-2 gap-x-4 mb-4">
               <Form.Item label="First name" name="firstName" className="mb-0">
@@ -424,7 +425,6 @@ const CheckoutPage = () => {
               label="Address"
               name="address"
               className="mb-4"
-   
             >
               <Autocomplete
                 apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}

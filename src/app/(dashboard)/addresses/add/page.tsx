@@ -7,8 +7,6 @@ import { useAddAddressMutation, type SavedAddressPayload } from "@/redux/feature
 import { Select } from "antd";
 import { Country, State, City } from "country-state-city";
 import { useState, useMemo } from "react";
-import { useAppSelector } from "@/redux/hooks";
-import { selectCurrentUser, selectToken } from "@/redux/features/auth/authSlice";
 import Autocomplete from "react-google-autocomplete";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
