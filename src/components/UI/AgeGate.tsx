@@ -109,7 +109,6 @@ const AgeGate = ({ children }: AgeGateProps) => {
         showGate && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
             <div
-              style={{ backgroundImage: `url(${Rectangle.src})` }}
               className="relative rounded-t-lg object-top w-full max-w-md overflow-hidden shadow-2xl"
             >
               <div className="px-8 py-10 bg-[#FAFAF8] mt-4 rounded-lg">
@@ -120,11 +119,8 @@ const AgeGate = ({ children }: AgeGateProps) => {
                       width={50}
                       height={50}
                       alt="logo"
-                      className="w-10 h-8"
+                      className="w-full h-16"
                     />
-                    <span className="text-[12px] md:text-[20px] lg:text-[22px] tracking-wide font-medium text-[#BF8D2F]">
-                      SMKR
-                    </span>
                   </Link>
                 </div>
 

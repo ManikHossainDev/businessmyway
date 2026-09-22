@@ -19,6 +19,10 @@ import 'react-phone-input-2/lib/style.css';
 import { Country, State, City } from "country-state-city";
 import Autocomplete from "react-google-autocomplete";
 
+import { useGetDeliveryQuery } from "@/redux/features/delivery/deliveryApi";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { FiZap } from "react-icons/fi";
+
 type CheckoutFormValues = {
   savedAddress?: string;
   name?: string;
@@ -28,15 +32,13 @@ type CheckoutFormValues = {
   email?: string;
   location?: string;
   address?: string;
-  apartment?: string; // ⭐ যুক্ত করা হয়েছে
+  apartment?: string; 
   city?: string;
   province?: string;
   country?: string;
   postcode?: string;
   isDefaultAddress?: boolean;
 };
-
-const PAID_DELIVERY_FEE = 4.99;
 
 const formatDefaultLocation = (profile?: {
   savedAddresses?: Array<{
@@ -100,7 +102,7 @@ const CheckoutPage = () => {
   }, [countryIso, stateIso]);
 
   const { data: profileData, isFetching: isProfileFetching } = useGetProfileQuery(undefined, { skip: !token || isAdmin });
-  
+
   const [checkoutOrder, { isLoading }] = useCheckoutOrderMutation();
   const [clearCart] = useClearCartMutation();
 
@@ -116,8 +118,29 @@ const CheckoutPage = () => {
   }));
 
   const profile = profileData?.data || cookieUser;
+
+  const { data: deliveryData, isLoading: isDeliveryLoading } = useGetDeliveryQuery();
+  const deliveryConfig = deliveryData?.data;
+
+  const maximumPrice = Number(deliveryConfig?.maximumPrice ?? 200);
+  const standardPrice = Number(deliveryConfig?.standardDelivery?.price ?? 4.99);
+  const standardDay = deliveryConfig?.standardDelivery?.day || "3-5 Business Days";
+  const expressPrice = Number(deliveryConfig?.expressDelivery?.price ?? 9.99);
+  const expressDay = deliveryConfig?.expressDelivery?.day || "1-2 Business Days";
+
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = React.useState<"standard" | "express">("standard");
+
   const subtotal = cartItems.reduce((sum: number, item: any) => sum + item.price * item.qty, 0);
-  const deliveryFee = PAID_DELIVERY_FEE;
+
+  // If subtotal is greater than or equal to maximumPrice (e.g. 200), delivery is FREE for both options
+  const isFreeDelivery = subtotal >= maximumPrice;
+
+  const deliveryFee = isFreeDelivery
+    ? 0
+    : selectedDeliveryMethod === "express"
+    ? expressPrice
+    : standardPrice;
+
   const total = subtotal + deliveryFee;
 
   useEffect(() => {
@@ -157,7 +180,7 @@ const CheckoutPage = () => {
     if (defaultAddress) {
       const defaultVal = defaultAddress._id || defaultAddress.id || "0";
       setSelectedAddressMode(defaultVal);
-      setSelectedAddressData(defaultAddress); 
+      setSelectedAddressData(defaultAddress);
 
       const initialCountry = defaultAddress.country || "United Kingdom";
       const initialProvince = defaultAddress.province || "";
@@ -176,7 +199,7 @@ const CheckoutPage = () => {
         lastName: defaultAddress.lastName || profile?.name?.split(" ").slice(1).join(" ") || "",
         phone: defaultAddress.phone || profile?.phone || "",
         address: [defaultAddress.country, defaultAddress.province, defaultAddress.city, defaultAddress.postcode].filter(Boolean).join(", ") || "",
-        apartment: defaultAddress.address2 || "", 
+        apartment: defaultAddress.address2 || "",
         city: defaultAddress.city || "",
         province: initialProvince,
         country: initialCountry,
@@ -187,7 +210,7 @@ const CheckoutPage = () => {
       });
     } else {
       setSelectedAddressMode("new");
-      setSelectedAddressData(null); 
+      setSelectedAddressData(null);
       setCountryIso("");
       setStateIso("");
       form.setFieldsValue({
@@ -195,8 +218,8 @@ const CheckoutPage = () => {
         firstName: "",
         lastName: "",
         phone: "",
-        address: "", 
-        apartment: "", 
+        address: "",
+        apartment: "",
         city: undefined,
         province: undefined,
         country: undefined,
@@ -231,8 +254,8 @@ const CheckoutPage = () => {
         name: profile?.name || "",
         email: profile?.email || "",
         location: "",
-        address: "", 
-        apartment: "", 
+        address: "",
+        apartment: "",
         city: undefined,
         province: undefined,
         country: undefined,
@@ -242,7 +265,7 @@ const CheckoutPage = () => {
     } else {
       const selectedOpt = addressOptions.find((opt: any) => opt.value === value);
       if (selectedOpt && selectedOpt.data) {
-        setSelectedAddressData(selectedOpt.data); 
+        setSelectedAddressData(selectedOpt.data);
 
         const c = selectedOpt.data.country || "United Kingdom";
         const p = selectedOpt.data.province || "";
@@ -278,7 +301,7 @@ const CheckoutPage = () => {
 
     place.address_components?.forEach((component: any) => {
       const types = component.types;
-      
+
       if (types.includes("locality") || types.includes("postal_town")) {
         city = component.long_name;
       }
@@ -339,7 +362,7 @@ const CheckoutPage = () => {
         phone: values.phone || "",
         email: values.email || "",
         location: values.location || "",
-        deliveryType: "paid_delivery",
+        deliveryType: selectedDeliveryMethod,
         origin: window.location.origin,
       }).unwrap();
       emptyCartUi();
@@ -391,7 +414,7 @@ const CheckoutPage = () => {
               </Form.Item>
             </div>
 
-             <div className="grid grid-cols-2 gap-x-4 mb-4">
+            <div className="grid grid-cols-2 gap-x-4 mb-4">
               <Form.Item label="Country/Region" name="country" className="mb-0" rules={[{ required: true, message: "Required" }]}>
                 <Select
                   showSearch
@@ -496,49 +519,168 @@ const CheckoutPage = () => {
           </Form>
         </ConfigProvider>
 
-        <div className="rounded-md border border-[#EDEDED] bg-[#FAFAF8] p-5 h-fit">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#1A1A1A]">
-            Order summary
-          </h3>
-
-          {isCartFetching ? (
-            <p className="text-sm text-gray-500 py-4">Loading cart...</p>
-          ) : (
-            <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
-              {cartItems.map((item: any) => (
-                <div key={item.id} className="flex items-center gap-3">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded border border-[#E5E5E5] bg-white">
-                    <ProductPhoto src={item.image} alt={item.title} className="h-full w-full object-contain p-1" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-1 text-sm font-medium text-[#1A1A1A]">{item.title}</p>
-                    <p className="text-xs text-gray-500">Qty {item.qty}</p>
-                  </div>
-                  <p className="text-sm font-semibold text-[#1A1A1A] shrink-0">
-                    £{(item.price * item.qty).toFixed(2)}
-                  </p>
-                </div>
-              ))}
-              {cartItems.length === 0 && (
-                <p className="text-sm text-gray-500">Your cart is empty.</p>
+        <div className="flex flex-col gap-6">
+          {/* Delivery Method Selection Card */}
+          <div className="rounded-md border border-[#EDEDED] bg-[#FAFAF8] p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <CiDeliveryTruck size={24} className="text-[#BF8D2F]" />
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-[#1A1A1A]">Delivery method</h3>
+              </div>
+              {isFreeDelivery && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                  ✓ Free Delivery Applied
+                </span>
               )}
             </div>
-          )}
 
-          <div className="mt-4 space-y-2 border-t border-[#E5E5E5] pt-4 text-sm">
-            <div className="flex justify-between text-[#1A1A1A]">
-              <span>Subtotal</span>
-              <span>£{subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-[#1A1A1A]">
-              <span>Paid Delivery</span>
-              <span>£{deliveryFee.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between pt-1">
-              <span className="font-semibold text-[#1A1A1A]">Total</span>
-              <span className="text-lg font-bold text-[#BF8D2F]">£{total.toFixed(2)}</span>
-            </div>
+            {isDeliveryLoading ? (
+              <p className="text-sm text-gray-500 py-3">Loading delivery options...</p>
+            ) : (
+              <>
+                {isFreeDelivery ? (
+                  <div className="mb-4 rounded-md bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800">
+                    🎉 Congratulations! Your order is over £{maximumPrice.toFixed(2)}, so delivery is completely <span className="font-bold">FREE</span>!
+                  </div>
+                ) : subtotal > 0 ? (
+                  <div className="mb-4 rounded-md bg-[#BF8D2F]/10 border border-[#BF8D2F]/30 p-3 text-xs text-[#8A6A24]">
+                    💡 Add <span className="font-bold text-[#1A1A1A]">£{(maximumPrice - subtotal).toFixed(2)}</span> more to your cart to qualify for <span className="font-bold text-[#BF8D2F]">FREE delivery</span> (Threshold: £{maximumPrice.toFixed(2)})!
+                  </div>
+                ) : null}
+
+                <div className="space-y-3">
+                  {/* Standard Delivery Option */}
+                  <div
+                    onClick={() => setSelectedDeliveryMethod("standard")}
+                    className={`flex items-center justify-between p-3.5 rounded-md border-2 cursor-pointer transition-all ${
+                      selectedDeliveryMethod === "standard"
+                        ? "border-[#BF8D2F] bg-[#BF8D2F]/5 shadow-sm"
+                        : "border-[#E5E5E5] hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        id="delivery_standard"
+                        name="deliveryMethod"
+                        checked={selectedDeliveryMethod === "standard"}
+                        onChange={() => setSelectedDeliveryMethod("standard")}
+                        className="accent-[#BF8D2F] w-4 h-4 cursor-pointer"
+                      />
+                      <label htmlFor="delivery_standard" className="cursor-pointer">
+                        <p className="font-medium text-[#1A1A1A] text-sm">Standard Delivery</p>
+                        <p className="text-xs text-gray-500">{standardDay}</p>
+                      </label>
+                    </div>
+                    <div className="text-right">
+                      {isFreeDelivery ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-gray-400 line-through">£{standardPrice.toFixed(2)}</span>
+                          <span className="text-sm font-bold text-emerald-600">FREE</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm font-semibold text-[#1A1A1A]">£{standardPrice.toFixed(2)}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Express Delivery Option */}
+                  <div
+                    onClick={() => setSelectedDeliveryMethod("express")}
+                    className={`flex items-center justify-between p-3.5 rounded-md border-2 cursor-pointer transition-all ${
+                      selectedDeliveryMethod === "express"
+                        ? "border-[#BF8D2F] bg-[#BF8D2F]/5 shadow-sm"
+                        : "border-[#E5E5E5] hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        id="delivery_express"
+                        name="deliveryMethod"
+                        checked={selectedDeliveryMethod === "express"}
+                        onChange={() => setSelectedDeliveryMethod("express")}
+                        className="accent-[#BF8D2F] w-4 h-4 cursor-pointer"
+                      />
+                      <label htmlFor="delivery_express" className="cursor-pointer">
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-medium text-[#1A1A1A] text-sm">Express Delivery</p>
+                          <span className="flex items-center gap-0.5 rounded bg-[#BF8D2F]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[#BF8D2F]">
+                            <FiZap size={10} /> Fast
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500">{expressDay}</p>
+                      </label>
+                    </div>
+                    <div className="text-right">
+                      {isFreeDelivery ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-gray-400 line-through">£{expressPrice.toFixed(2)}</span>
+                          <span className="text-sm font-bold text-emerald-600">FREE</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm font-semibold text-[#1A1A1A]">£{expressPrice.toFixed(2)}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+
+          <div className="rounded-md border border-[#EDEDED] bg-[#FAFAF8] p-5 h-fit">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#1A1A1A]">
+              Order summary
+            </h3>
+
+        {isCartFetching ? (
+          <p className="text-sm text-gray-500 py-4">Loading cart...</p>
+        ) : (
+          <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
+            {cartItems.map((item: any) => (
+              <div key={item.id} className="flex items-center gap-3">
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded border border-[#E5E5E5] bg-white">
+                  <ProductPhoto src={item.image} alt={item.title} className="h-full w-full object-contain p-1" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-1 text-sm font-medium text-[#1A1A1A]">{item.title}</p>
+                  <p className="text-xs text-gray-500">Qty {item.qty}</p>
+                </div>
+                <p className="text-sm font-semibold text-[#1A1A1A] shrink-0">
+                  £{(item.price * item.qty).toFixed(2)}
+                </p>
+              </div>
+            ))}
+            {cartItems.length === 0 && (
+              <p className="text-sm text-gray-500">Your cart is empty.</p>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 space-y-2 border-t border-[#E5E5E5] pt-4 text-sm">
+          <div className="flex justify-between text-[#1A1A1A]">
+            <span>Subtotal</span>
+            <span>£{subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-[#1A1A1A]">
+            <span>
+              {selectedDeliveryMethod === "express" ? "Express Delivery" : "Standard Delivery"}
+            </span>
+            <span>
+              {isFreeDelivery ? (
+                <span className="font-semibold text-emerald-600">FREE</span>
+              ) : (
+                `£${deliveryFee.toFixed(2)}`
+              )}
+            </span>
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-dashed border-[#E5E5E5]">
+            <span className="font-semibold text-[#1A1A1A]">Total</span>
+            <span className="text-lg font-bold text-[#BF8D2F]">£{total.toFixed(2)}</span>
+          </div>
+        </div>
+          
+
           <button
             type="button"
             onClick={onPay}
@@ -554,7 +696,8 @@ const CheckoutPage = () => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default CheckoutPage;

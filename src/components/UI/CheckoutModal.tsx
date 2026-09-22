@@ -13,6 +13,8 @@ import { useGetProfileQuery } from "@/redux/features/Profile/Profile";
 import { useCheckoutOrderMutation } from "@/redux/features/orders/orderApi";
 import { cartApi, useClearCartMutation } from "@/redux/features/cart/cartApi";
 
+import { useGetDeliveryQuery } from "@/redux/features/delivery/deliveryApi";
+
 type CartItem = {
   id: string;
   image: string;
@@ -34,8 +36,6 @@ type CheckoutModalProps = {
   cartItems: CartItem[];
   onCartCleared?: () => void;
 };
-
-const PAID_DELIVERY_FEE = 4.99;
 
 const formatDefaultLocation = (profile?: {
   savedAddresses?: Array<{
@@ -59,11 +59,18 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
   const isAdmin = isAdminRole(useAppSelector(selectCurrentUser)?.role);
   const [form] = Form.useForm<CheckoutFormValues>();
   const { data: profileData, isFetching } = useGetProfileQuery({}, { skip: !open || isAdmin });
+  const { data: deliveryData } = useGetDeliveryQuery(undefined, { skip: !open });
   const [checkoutOrder, { isLoading }] = useCheckoutOrderMutation();
   const [clearCart] = useClearCartMutation();
+
+  const deliveryConfig = deliveryData?.data;
+  const maximumPrice = Number(deliveryConfig?.maximumPrice ?? 200);
+  const standardPrice = Number(deliveryConfig?.standardDelivery?.price ?? 4.99);
+
   const profile = profileData?.data;
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const deliveryFee = PAID_DELIVERY_FEE;
+  const isFreeDelivery = subtotal >= maximumPrice;
+  const deliveryFee = isFreeDelivery ? 0 : standardPrice;
   const total = subtotal + deliveryFee;
 
   useEffect(() => {
@@ -98,7 +105,7 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
       const values = await form.validateFields();
       const result = await checkoutOrder({
         ...values,
-        deliveryType: "paid_delivery",
+        deliveryType: "standard",
         origin: window.location.origin,
       }).unwrap();
       emptyCartUi();
@@ -209,8 +216,8 @@ const CheckoutModal = ({ open, onClose, cartItems, onCartCleared }: CheckoutModa
               <span>£{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-[#1A1A1A]">
-              <span>Paid Delivery</span>
-              <span>£{deliveryFee.toFixed(2)}</span>
+              <span>Delivery</span>
+              <span>{isFreeDelivery ? <span className="font-semibold text-emerald-600">FREE</span> : `£${deliveryFee.toFixed(2)}`}</span>
             </div>
             <div className="flex items-center justify-between pt-1">
               <span className="font-semibold text-[#1A1A1A]">Total</span>

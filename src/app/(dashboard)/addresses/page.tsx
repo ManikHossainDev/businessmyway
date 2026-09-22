@@ -127,13 +127,13 @@ const Page = () => {
           <span className="text-[#c98a3e]">Details</span>
         </h1>
         {/* <GifRevealWrapper borderSize={3}> */}
-          <button
-            type="button"
-            onClick={openAddModal}
-            className="h-[40px] w-[200px] rounded-sm bg-[#BF8D2F] px-2 font-medium text-white transition-colors hover:bg-[#a97922] md:w-[180px] lg:w-[200px] lg:px-[10px] lg:py-[10px]"
-          >
-            Add New Address
-          </button>
+        <button
+          type="button"
+          onClick={openAddModal}
+          className="h-[40px] w-[200px] rounded-sm bg-[#BF8D2F] px-2 font-medium text-white transition-colors hover:bg-[#a97922] md:w-[180px] lg:w-[200px] lg:px-[10px] lg:py-[10px]"
+        >
+          Add New Address
+        </button>
         {/* </GifRevealWrapper> */}
       </div>
 
