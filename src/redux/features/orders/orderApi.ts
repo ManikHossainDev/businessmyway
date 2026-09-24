@@ -48,6 +48,7 @@ type CheckoutResponse = {
     direct?: boolean;
     orderId: string;
     orderNumber: string;
+    orderCode?: string;
   };
 };
 
@@ -73,11 +74,14 @@ const orderApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["order", "cart", "product"],
     }),
-    confirmOrder: builder.mutation<OrderResponse, { orderId: string; sessionId: string }>({
-      query: ({ orderId, sessionId }) => ({
-        url: `/orders/${orderId}/confirm`,
+    confirmOrder: builder.mutation<
+      OrderResponse,
+      { orderId?: string; sessionId?: string; orderCode?: string; transactionId?: string }
+    >({
+      query: ({ orderId, sessionId, orderCode, transactionId }) => ({
+        url: `/orders/${orderId || "lookup"}/confirm`,
         method: "POST",
-        body: { sessionId },
+        body: { sessionId, orderCode, transactionId },
       }),
       invalidatesTags: ["cart", "order", "product"],
     }),

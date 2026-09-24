@@ -371,6 +371,13 @@ const CheckoutPage = () => {
       } catch {
         dispatch(baseApi.util.invalidateTags(["cart"]));
       }
+      if (result.data?.orderId) {
+        try {
+          sessionStorage.setItem("lastOrderId", result.data.orderId);
+        } catch {
+          // ignore
+        }
+      }
       if (result.data?.url) {
         window.location.assign(result.data.url);
       }
@@ -688,10 +695,10 @@ const CheckoutPage = () => {
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm bg-[#BF8D2F] py-3.5 font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
           >
             <LockOutlined />
-            {isLoading ? "Redirecting to Stripe..." : "Pay securely with Stripe"}
+            {isLoading ? "Redirecting to Viva Payments..." : "Pay securely with Viva Payments"}
           </button>
           <p className="mt-3 text-center text-xs text-gray-400">
-            You will be redirected to Stripe to complete payment.
+            You will be redirected to Viva Payments to complete payment.
           </p>
         </div>
       </div>
